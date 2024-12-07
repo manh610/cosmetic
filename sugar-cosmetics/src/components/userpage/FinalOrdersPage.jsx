@@ -371,6 +371,7 @@ export default function FinalOrdersPage() {
         <div className="rightside_user">
           {orders.length == 0 || orders.length == undefined ? (
             <IfEmpty
+              key={orders.id}
               img_src={
                 "https://media.sugarcosmetics.com/upload/ic_empty_order%201.png"
               }
@@ -415,7 +416,7 @@ export default function FinalOrdersPage() {
                               marginTop: "0px",
                             }}
                             variant="top"
-                            src={el.api_featured_image}
+                            src={`data:image/jpeg;base64,${el.photo}`}
                           />
                         </Link>
                         <Card.Title
@@ -452,7 +453,7 @@ export default function FinalOrdersPage() {
                             />
                             <p style={{ marginTop: "15px" }}>
                               {" "}
-                              {el.product_colors.length} shades
+                              {/* {el.product_colors.length} shades */}
                             </p>
                           </div>
                         </Card.Subtitle>

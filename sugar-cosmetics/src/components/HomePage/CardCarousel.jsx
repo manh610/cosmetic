@@ -3,7 +3,7 @@ import Card from "react-bootstrap/Card";
 import { Link, Navigate, useNavigate } from "react-router-dom";
 
 function CardCarousel(props) {
-  const { src1, text, price, prod_id } = props;
+  const { src1, text, price, prod_id, photo } = props;
   const navigate = useNavigate();
 
   return (

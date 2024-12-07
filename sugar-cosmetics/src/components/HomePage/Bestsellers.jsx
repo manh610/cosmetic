@@ -1,7 +1,18 @@
+import { useEffect, useState } from "react";
 import BestsellersCardCarousel from "./BestsellersCardCarousal";
-import { BestSellersData } from "./bestsellerdata";
+import ProductService from "../../app/service/product.service";
+// import { BestSellersData } from "./bestsellerdata";
 
 export default function BestSellers() {
+  const [bestSellersData, setBestSellersData] = useState([]);
+  useEffect(() => {
+    ProductService.search({}).then((res) => {
+      console.log("res", res);
+      setBestSellersData(res.data);
+    }).catch((err) => {
+      console.log(err);
+    });
+  }, []);
   return (
     <div className="BestSellers">
       <div className="titleBS">
@@ -17,7 +28,7 @@ export default function BestSellers() {
       </div>
 
       <div className="main_bestsellers">
-        <BestsellersCardCarousel BestSellersData={BestSellersData} />
+        <BestsellersCardCarousel BestSellersData={bestSellersData} />
       </div>
     </div>
   );

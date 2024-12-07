@@ -20,6 +20,8 @@ import FinalRefferPage from "../components/userpage/FinalReferPage";
 import Cart from "./Cart";
 import PrivateRoute from "../context/PrivateRoute";
 import SearchResultsPage from "./SearchResultsPage";
+import Admin from "../app/admin/admin.js";
+import CategoryPage from "../components/CategoryPage.jsx";
 
 export default function AllRoutes() {
   return (
@@ -27,6 +29,7 @@ export default function AllRoutes() {
       <Route path="/" element={<Home />}></Route>
       <Route path="/login-register" element={<RegisterLogin />}></Route>
       <Route path="/results" element={<SearchResultsPage/>}></Route>
+      <Route path="/category/:categoryId" element={<CategoryPage/>}></Route>
       <Route path="/MakeUp" element={<FinalMakeupPage />}></Route>
       <Route path="*" element={<PageNotFound />}></Route>
       <Route path="/Brushes" element={<FinalBrushesPage />}></Route>
@@ -39,6 +42,8 @@ export default function AllRoutes() {
       <Route path="/user/address" element={<PrivateRoute><FinalAddressPage/></PrivateRoute>}></Route>
       <Route path="/user/refer" element={<PrivateRoute><FinalRefferPage/></PrivateRoute>}></Route>
       <Route path="/Cart" element={<Cart/>}></Route>
+      <Route path="/admin/*" element={<Admin/>}></Route>
+
     </Routes>
   );
 }

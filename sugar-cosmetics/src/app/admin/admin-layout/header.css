@@ -1,0 +1,21 @@
+.header{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 64px;
+    background-color: #FD95AB;
+}
+
+.content {
+    width: 80%;
+    padding-right: 20px;
+    color: white;
+}
+
+.noti{
+    margin-right: 20px;
+}
+
+.fl-right{
+    float: right;
+}

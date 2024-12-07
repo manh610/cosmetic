@@ -1,0 +1,58 @@
+.admin-content{
+    width: 100%;
+}
+
+.admin-content-container{
+    justify-content: center;
+    width: fit-content;
+    padding: 20px 20px;
+    margin: 20px 0 0 20px;
+    border: 1px solid #efeeee;
+    /* background-color: #efeeee; */
+}
+
+.admin-title {
+    font-size: 16px;
+    font-weight: bold;
+    margin-bottom: 20px;
+}
+
+.btn-admin-add{
+    margin-right: 10px;
+}
+
+.admin-btn-container{
+    margin-top: 30px;
+    margin-right: 100px;
+    justify-content: center;
+}
+
+.require-icon{
+    color: red
+}
+
+.ant-upload-wrapper{
+    margin-top: 15px !important;
+}
+
+.mg-t-15 {
+    margin-top: 15px;
+}
+
+.mg-t-20 {
+    margin-top: 20px
+}
+
+.ant-input-prefix{
+    margin-right: 20px;
+    background-color: #eeeeee;
+    padding: 0 10px;
+}
+
+.mg-bt-20{
+    margin-bottom: 20px;
+}
+
+.mg-bt-15{
+    margin-bottom: 15px;
+}

@@ -10,19 +10,23 @@ import Footer from "../components/Footer";
 import IfEmpty from "../components/userpage/IfEmpty";
 import swal from "sweetalert";
 import Confetti from "react-confetti";
+import OrderService from "../app/service/order.service";
+import AddressService from "../app/service/address.service";
 
 export default function Cart() {
   const navigate = useNavigate();
-  const { cart, RemoveFromCart, defaultAddress, ShowOrders, Loginstate } =
+  const { cart, RemoveFromCart, ShowOrders, Loginstate } =
     useContext(Appcontext);
+  const [address, setAddress] = useState([]);
+  const [defaultAddress, setDefaultAddress] = useState(null);
   const [count, setCount] = useState(1);
-  const [total, setTotal] = useState();
+  const [total, setTotal] = useState(0);
   const [coupon, setCoupan] = useState("");
   const [couponapplied, setcouponapplied] = useState(false);
   const [confetti, setConfetti] = useState(false);
 
   function checkCoupan() {
-    if (coupon == "GOMSMD") {
+    if (coupon == "KHANHDZ") {
       swal({
         text: "Coupon Applied Successfully!",
         buttons: false,
@@ -34,7 +38,17 @@ export default function Cart() {
     }
   }
 
-  function addtoorders() {
+  useEffect(() => {
+    const fetchAddress = async () => {
+      const res = await AddressService.getByUserId(Loginstate.userdata.id);
+      console.log("res", res);
+      setDefaultAddress(res.data[0]);
+      setAddress(res.data);
+    };
+    fetchAddress();
+  }, []);
+
+  async function addtoorders() {
     if (Loginstate.isAuth == false) {
       return swal({
         title: "Not Logged In!",
@@ -42,23 +56,55 @@ export default function Cart() {
         icon: "error",
       });
     }
-    ShowOrders(cart);
-    swal({
-      title: "Order Placed Successfully!",
-      text: "You will be redirected! Thanks for Shopping with us! ",
-      icon: "success",
-      buttons: false,
-    });
-    setConfetti(true);
-    setTimeout(() => {
-      navigate("/user/orders");
-    }, 5000);
+    try {
+      const payload = {
+        userId: Loginstate.userdata.id,
+        note: "",
+        totalPrice: total,
+        addressId: defaultAddress?.id, 
+        deliveryUnitId: "e831a7ba-668d-4f6c-9c21-6adbfcc5f3a7",
+        deliveryType: "GTN",
+        paymentId: null,
+        deliveryDate: null,
+        receiptDate: null,
+        censor: null,
+        // discountId: "d73e5c8d-3e35-4d98-b858-e53cef222f99",
+        productItem: [
+          {
+            productItemId: "074be936-c769-4d5d-a4b5-0cd00576bf22",
+            quantity: 2
+          },
+          {
+            productItemId: "01bf05fa-fc4f-4577-9359-5a576989f0c3", 
+            quantity: 1
+          }
+        ]
+      }
+      console.log("payload", payload);
+
+      // await OrderService.create(payload);
+
+      // ShowOrders(cart);
+      // swal({
+      //   title: "Order Placed Successfully!",
+      //   text: "You will be redirected! Thanks for Shopping with us! ",
+      //   icon: "success",
+      //   buttons: false,
+      // });
+      // setConfetti(true);
+      // setTimeout(() => {
+      //   navigate("/user/orders");
+      // }, 5000);
+      
+    } catch (err) {
+      console.log(err);
+    }
   }
 
   useEffect(() => {
     let sum = 0;
     cart.map((el) => {
-      sum += Number(el.price);
+      sum += Number(el.minPrice);
     });
 
     setTotal(Math.round(sum));
@@ -401,7 +447,7 @@ export default function Cart() {
                     <div style={{ width: "64px", height: "48px" }}>
                       <Link to={`/results/${el.id}`}>
                         <img
-                          src={el.api_featured_image}
+                          src={`data:image/jpeg;base64,${el.photo}`}
                           alt=""
                           style={{
                             width: "36px",
@@ -444,7 +490,7 @@ export default function Cart() {
                             fontWeight: "bold",
                           }}
                         >
-                          ₹ <span>{el.price}</span>
+                          ₹ <span>{el.minPrice}</span>
                         </p>
                       </div>
                     </div>
@@ -498,7 +544,7 @@ export default function Cart() {
                           }}
                           onClick={() => {
                             setCount((prev) => prev - 1);
-                            addingtotalqty(el.price);
+                            addingtotalqty(el.minPrice);
                           }}
                         >
                           -
@@ -525,7 +571,7 @@ export default function Cart() {
                           }}
                           onClick={() => {
                             setCount((prev) => prev + 1);
-                            addingtotalqty(el.price);
+                            addingtotalqty(el.minPrice);
                           }}
                         >
                           +
@@ -723,7 +769,7 @@ export default function Cart() {
               paddingLeft: "20px",
             }}
           >
-            {defaultAddress.firstN == undefined ? (
+            {defaultAddress == null ? (
               <p style={{ marginTop: "70px", textAlign: "center" }}>
                 Login To Add Address or Already Logged in please add address and
                 set default address
@@ -741,7 +787,7 @@ export default function Cart() {
                       justifyContent: "space-between",
                     }}
                   >
-                    {defaultAddress.firstN + " " + defaultAddress.lastN}
+                    {defaultAddress.fullName}
                   </div>
                   <div
                     style={{
@@ -753,7 +799,7 @@ export default function Cart() {
                       overflow: "hidden",
                     }}
                   >
-                    {defaultAddress.areaa}
+                    {defaultAddress.addressType}
                   </div>
                   <div
                     style={{
@@ -764,12 +810,12 @@ export default function Cart() {
                       justifyContent: "left",
                     }}
                   >
-                    <span>{defaultAddress.statee}</span>
+                    <span>{defaultAddress.wardFullName}</span>
                     <span style={{ marginLeft: "30px" }}>
-                      {defaultAddress.cityy}
+                      {defaultAddress.districtFullName + ", " + defaultAddress.provinceFullName}
                     </span>
                     <span style={{ marginLeft: "30px" }}>
-                      {defaultAddress.pin}
+                      {defaultAddress.detail}
                     </span>
                   </div>
                   <div
@@ -781,7 +827,7 @@ export default function Cart() {
                       justifyContent: "left",
                     }}
                   >
-                    Phone Number :{defaultAddress.mobile}
+                    Phone Number :{defaultAddress.phone}
                   </div>
                 </di>
                 <p
@@ -831,9 +877,8 @@ export default function Cart() {
         >
           <p>
             Delivering to -{" "}
-            {defaultAddress.firstN != undefined &&
-            defaultAddress.lastN != undefined
-              ? defaultAddress.firstN + " " + defaultAddress.lastN
+            {defaultAddress != null
+              ? defaultAddress.fullName
               : "Login first"}
           </p>
         </div>

@@ -3,39 +3,25 @@ import { Link } from "react-router-dom";
 import CardCarousel from "./CardCarousel";
 
 function BestsellersCardCarousel({ BestSellersData }) {
+  console.log("BestSellersData", BestSellersData);
   return (
     <>
       <Carousel slide={false} className="bestseller_carousal">
         <Carousel.Item>
-          <div className="CardCrousel">
-            <CardCarousel
-              src1={BestSellersData[0].image_link}
-              text={BestSellersData[0].name}
-              prod_id={BestSellersData[0].id}
-              price={BestSellersData[0].price}
-            />
-            <CardCarousel
-              src1={BestSellersData[1].image_link}
-              text={BestSellersData[1].name}
-              prod_id={BestSellersData[1].id}
-              price={BestSellersData[1].price}
-            />
-            <CardCarousel
-              src1={BestSellersData[2].image_link}
-              text={BestSellersData[2].name}
-              prod_id={BestSellersData[2].id}
-              price={BestSellersData[2].price}
-            />
-            <CardCarousel
-              src1={BestSellersData[3].image_link}
-              text={BestSellersData[3].name}
-              prod_id={BestSellersData[3].id}
-              price={BestSellersData[3].price}
-            />
+          <div  className="CardCrousel">
+            {BestSellersData.map((item) => (
+              <CardCarousel
+                key={item.id}
+                src1={`data:image/jpeg;base64,${item.photo}`}
+                text={item.name}
+                prod_id={item.id}
+                price={item.minPrice}
+              />
+            ))}
           </div>
         </Carousel.Item>
 
-        <Carousel.Item>
+        {/* <Carousel.Item>
           <div className="CardCrousel">
             <CardCarousel
               src1={BestSellersData[4].image_link}
@@ -62,9 +48,9 @@ function BestsellersCardCarousel({ BestSellersData }) {
               price={BestSellersData[7].price}
             />
           </div>
-        </Carousel.Item>
+        </Carousel.Item> */}
 
-        <Carousel.Item>
+        {/* <Carousel.Item>
           <div className="CardCrousel">
             <CardCarousel
               src1={BestSellersData[8].image_link}
@@ -91,10 +77,10 @@ function BestsellersCardCarousel({ BestSellersData }) {
               price={BestSellersData[11].price}
             />
           </div>
-        </Carousel.Item>
+        </Carousel.Item> */}
       </Carousel>
 
-      <Carousel slide={false} className="CardCrousel_Ipad">
+      {/* <Carousel slide={false} className="CardCrousel_Ipad">
         <Carousel.Item>
           <div className="CardCrousel">
             <CardCarousel
@@ -145,9 +131,9 @@ function BestsellersCardCarousel({ BestSellersData }) {
             />
           </div>
         </Carousel.Item>
-      </Carousel>
+      </Carousel> */}
 
-      <Carousel slide={false} className="CardCrousel_mobile">
+      {/* <Carousel slide={false} className="CardCrousel_mobile">
         <Carousel.Item>
           <div className="CardCrousel">
             <CardCarousel
@@ -180,7 +166,7 @@ function BestsellersCardCarousel({ BestSellersData }) {
             />
           </div>
         </Carousel.Item>
-      </Carousel>
+      </Carousel> */}
     </>
   );
 }

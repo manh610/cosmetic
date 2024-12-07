@@ -34,7 +34,7 @@ function FourCardsCarousel({ BestSellersData }) {
           </div>
         </Carousel.Item>
 
-        <Carousel.Item>
+        {/* <Carousel.Item>
           <div className="CardCrousel">
             <CardCarousel
               src1={BestSellersData[4].image_link}
@@ -61,9 +61,9 @@ function FourCardsCarousel({ BestSellersData }) {
               price={BestSellersData[7].price}
             />
           </div>
-        </Carousel.Item>
+        </Carousel.Item> */}
 
-        <Carousel.Item>
+        {/* <Carousel.Item>
           <div className="CardCrousel">
             <CardCarousel
               src1={BestSellersData[8].image_link}
@@ -90,7 +90,7 @@ function FourCardsCarousel({ BestSellersData }) {
               price={BestSellersData[11].price}
             />
           </div>
-        </Carousel.Item>
+        </Carousel.Item> */}
       </Carousel>
       <Carousel variant="dark" slide={false} className="CardCrousel_Ipad">
         <Carousel.Item>

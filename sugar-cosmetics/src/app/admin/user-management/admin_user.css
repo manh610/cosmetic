@@ -1,0 +1,29 @@
+.btn-add-user {
+    margin-right: 10px;
+}
+
+.require-icon{
+    color: red
+}
+
+.field-label{
+    margin-bottom: 5px;
+}
+
+.user-account{
+    margin-bottom: 20px;
+}
+
+.user-info{
+    margin-top: 20px;
+}
+
+.admin-user-btn-container{
+    margin-top: 30px;
+    margin-right: 100px;
+    justify-content: center;
+}
+
+.btn-back{
+    margin-right: 10px;
+}

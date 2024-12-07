@@ -8,12 +8,13 @@ import { Appcontext } from "../../context/AppContext";
 import MyVerticallyCenteredModal from "./addressverticalmodal";
 import swal from "sweetalert";
 import Footer from "../Footer";
+import AddressService from "../../app/service/address.service";
 
 export default function FinalAddressPage() {
   const navigate = useNavigate();
   const [modalShow, setModalShow] = useState(false);
+  const [address, setAddress] = useState([]);
   const {
-    address,
     Loginstate,
     removeAddress,
     defaultAddress,
@@ -21,6 +22,29 @@ export default function FinalAddressPage() {
   } = useContext(Appcontext);
 //   console.log(address);
 //  console.log(Loginstate);
+
+
+  const fetchAddress = async () => {
+    try {
+      setAddress([]);
+      const res = await AddressService.getByUserId(Loginstate.userdata.id);
+      console.log(res);
+      setAddress(res.data);
+    } catch (error) {
+      console.error("Error fetching address:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchAddress();
+  }, []);
+
+  useEffect(() => {
+    if (!modalShow) {
+      fetchAddress();
+    }
+  }, [modalShow]);
+
   function remeoveaddress(addtoberemoved) {
     if (defaultAddress == addtoberemoved) {
       SettingDefaultAdd("");
@@ -476,7 +500,7 @@ export default function FinalAddressPage() {
                 }}
               >
                 {address.map((el) => {
-                  if (el == defaultAddress) {
+                  if (el.isDefault) {
                     return (
                       <div
                         style={{
@@ -501,7 +525,7 @@ export default function FinalAddressPage() {
                             justifyContent: "space-between",
                           }}
                         >
-                          {el.firstN + " " + el.lastN}{" "}
+                          {el.fullName}
                           <span
                             style={{ cursor: "pointer" }}
                             onClick={() => {
@@ -528,7 +552,7 @@ export default function FinalAddressPage() {
                             justifyContent: "left",
                           }}
                         >
-                          {el.mobile}
+                          {el.provinceFullName}
                         </div>
                         <div
                           style={{
@@ -617,7 +641,7 @@ export default function FinalAddressPage() {
                             justifyContent: "space-between",
                           }}
                         >
-                          {el.firstN + " " + el.lastN}{" "}
+                          {el.fullName}{" "}
                           <span
                             style={{ cursor: "pointer" }}
                             onClick={() => {
@@ -644,7 +668,7 @@ export default function FinalAddressPage() {
                             justifyContent: "left",
                           }}
                         >
-                          {el.mobile}
+                          {el.phone}
                         </div>
                         <div
                           style={{
@@ -658,7 +682,7 @@ export default function FinalAddressPage() {
                           }}
                           onClick={() => setAsdefault(el)}
                         >
-                          {el.areaa}
+                          {el.addressType}
                         </div>
                         <div
                           style={{
@@ -669,7 +693,7 @@ export default function FinalAddressPage() {
                             justifyContent: "left",
                           }}
                         >
-                          {el.pin}
+                          {el.detail}
                         </div>
                         <div
                           style={{
@@ -680,8 +704,8 @@ export default function FinalAddressPage() {
                             justifyContent: "left",
                           }}
                         >
-                          <span>{el.statee}</span>
-                          <span style={{ marginLeft: "30px" }}>{el.cityy}</span>
+                          <span>{el.wardFullName}</span>
+                          <span style={{ marginLeft: "30px" }}>{el.districtFullName + ", " + el.provinceFullName}</span>
                         </div>
                       </div>
                     );

@@ -10,11 +10,15 @@ import swal from "sweetalert";
 import axios from "axios";
 import { Appcontext } from "../../context/AppContext";
 import Spinner from "react-bootstrap/Spinner";
+import { UserOutlined, LockOutlined } from '@ant-design/icons';
+import authService from "../../api/auth";
+import userService from "../../app/service/user.service";
+
 
 export default function RightSide() {
   const [data, setdata] = useState(false);
   const [otpentry, setotpentry] = useState("");
-  const [mnumber, setNumber] = useState("");
+  const [mnumber, setMnumber] = useState("");
   const [enterotp, setenterotp] = useState(false);
   const [signup, setsignup] = useState(false);
   const [cheked, setchecked] = useState(true);
@@ -24,6 +28,8 @@ export default function RightSide() {
   const { Loginstate, LoginUser, SignUpUser } = useContext(Appcontext);
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
 
   // ------------------------------------------------function for captchaverfication invisible-----------------------------------
 
@@ -162,6 +168,23 @@ export default function RightSide() {
   //   }
 
   // }
+
+  function login(){
+    console.log(username, password);
+    authService.login({ username, password }).then((res) => {
+      console.log(res);
+      userService.getUserFromToken(res.data.jwtToken).then((res) => {
+        console.log(res);
+        LoginUser(res.data);
+        navigate("/");
+      }).catch((err) => {
+        console.log(err);
+      });
+    }).catch((err) => {
+      console.log(err);
+    });
+      
+  }
 
   // ---------------------------------function for signing up user if not available---------------------------------
 
@@ -399,10 +422,9 @@ export default function RightSide() {
               fontSize: "14px",
             }}
           >
-            Registering for this site allows you to access your order status and
-            history. Just fill in the above fields, and we'll get a new account
-            set up for you in no time. We will only ask you for information
-            necessary to make the purchase process faster and easier.
+            Đăng ký tài khoản để theo dõi trạng thái và lịch sử đơn hàng của bạn. 
+            Chỉ cần điền vào các trường trên, chúng tôi sẽ thiết lập tài khoản mới cho bạn ngay lập tức. 
+            Chúng tôi chỉ yêu cầu những thông tin cần thiết để quá trình mua hàng nhanh chóng và dễ dàng hơn.
           </p>
         </div>
         {email == "" || firstName == "" || lastName == "" ? (
@@ -544,7 +566,7 @@ export default function RightSide() {
                 marginBottom: "30px",
               }}
             >
-              Login/Sign Up Using Phone
+              Login/Sign Up Using Account
             </h6>
           </div>
         </div>
@@ -607,10 +629,7 @@ export default function RightSide() {
               fontSize: "14px",
             }}
           >
-            Registering for this site allows you to access your order status and
-            history. Just fill in the above fields, and we'll get a new account
-            set up for you in no time. We will only ask you for information
-            necessary to make the purchase process faster and easier.
+              
           </p>
         </div>
         {otpentry.length != 6 ? (
@@ -769,19 +788,33 @@ export default function RightSide() {
       <div>
         <InputGroup className="mb-3" style={{ width: "353px", height: "56px" }}>
           <InputGroup.Text
-            id="basic-addon1"
+            id="basic-addon1" 
             style={{ backgroundColor: "#fff" }}
           >
-            +91
+            <UserOutlined />
           </InputGroup.Text>
           <Form.Control
-            placeholder="Enter Mobile Number"
-            aria-label="+91"
-            type="number"
+            placeholder="Tên đăng nhập"
+            type="text"
             aria-describedby="basic-addon1"
-            value={mnumber}
-            className="inputnumber_otp"
-            onChange={(e) => setNumber(e.target.value)}
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+          />
+        </InputGroup>
+
+        <InputGroup className="mb-3" style={{ width: "353px", height: "56px" }}>
+          <InputGroup.Text
+            id="basic-addon2"
+            style={{ backgroundColor: "#fff" }}
+          >
+            <LockOutlined />
+          </InputGroup.Text>
+          <Form.Control
+            placeholder="Mật khẩu" 
+            type="password"
+            aria-describedby="basic-addon2"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
           />
         </InputGroup>
         <Form.Text id="passwordHelpBlock" muted></Form.Text>
@@ -796,15 +829,32 @@ export default function RightSide() {
             fontSize: "14px",
           }}
         >
-          Registering for this site allows you to access your order status and
-          history. Just fill in the above fields, and we'll get a new account
-          set up for you in no time. We will only ask you for information
-          necessary to make the purchase process faster and easier.
+          Đăng ký tài khoản để theo dõi trạng thái và lịch sử đơn hàng của bạn. 
+          Chỉ cần điền vào các trường trên, chúng tôi sẽ thiết lập tài khoản mới cho bạn ngay lập tức. 
+          Chúng tôi chỉ yêu cầu những thông tin cần thiết để quá trình mua hàng nhanh chóng và dễ dàng hơn.
         </p>
       </div>
-      {mnumber.length !== 10 ? (
+      {  username.length > 0 && password.length > 0 ? (
         <div>
           <button
+            // disabled={false}
+            onClick={login}
+            style={{
+              padding: "10px 25px",
+              fontSize: "14px",
+              borderRadius: "10px",
+              backgroundColor: "#000",
+              color: "#fff",
+              border: "none",
+            }}
+          >
+            Đăng nhập
+          </button>
+        </div>
+      ) : (
+        <div>
+          <button
+            // onClick={requestotp}
             disabled={true}
             style={{
               padding: "10px 25px",
@@ -812,28 +862,12 @@ export default function RightSide() {
               borderRadius: "10px",
               backgroundColor: "lightgray",
               color: "gray",
-              border: "none",
-            }}
-          >
-            SEND ME OTP
-          </button>
-        </div>
-      ) : (
-        <div>
-          <button
-            onClick={requestotp}
-            style={{
-              padding: "10px 25px",
-              fontSize: "14px",
-              borderRadius: "10px",
-              backgroundColor: "#000",
-              color: "#fff",
             }}
           >
            {loading ? (
                  <Spinner animation="border" variant="light" size="sm" />
               ) : (
-                "SEND ME OTP"
+                "Đăng nhập"
               )}
           </button>
         </div>

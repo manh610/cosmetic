@@ -1,7 +1,16 @@
+import { useEffect, useState } from "react";
 import BestsellersCardCarousel from "./BestsellersCardCarousal";
 import { supersaverdata } from "./supersaverdata";
+import ProductService from "../../app/service/product.service";
 
 export default function SuperSaver() {
+  const [supersaverData, setSupersaverData] = useState([]);
+  useEffect(() => {
+    ProductService.search({}).then((res) => {
+      console.log("res", res);
+      setSupersaverData(res.data);
+    });
+  }, []);
   return (
     <div className="BestSellers1">
       <div className="titleBS">
@@ -17,7 +26,7 @@ export default function SuperSaver() {
       </div>
 
       <div style={{ marginTop: "0px" }}>
-        <BestsellersCardCarousel BestSellersData={supersaverdata} />
+        <BestsellersCardCarousel BestSellersData={supersaverData} />
       </div>
     </div>
   );

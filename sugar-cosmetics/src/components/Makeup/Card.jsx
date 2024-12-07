@@ -23,7 +23,7 @@ export default function Card2({carddata,id}) {
             marginTop: "0px",
           }}
           variant="top"
-          src={carddata.api_featured_image}
+          src={`data:image/jpeg;base64,${carddata.photo}`}
         /></Link>
         <Card.Title
           style={{
@@ -53,13 +53,13 @@ export default function Card2({carddata,id}) {
               src="https://i.postimg.cc/SR65TFbL/bx.jpg"
               alt=""
             />
-            <p style={{ marginTop: "15px" }}> {carddata.product_colors.length} shades</p>
+            <p style={{ marginTop: "15px" }}> {carddata.status === "STOCK" ? Math.floor(Math.random() * 10) + 1 : 0} shades</p>
           </div>
         </Card.Subtitle>
         <Card.Text
           style={{ fontSize: "18px", fontWeight: "bold", marginTop: "10px" }}
         >
-          ₹ {carddata.price}
+          ₹ {carddata.minPrice}
         </Card.Text>
         <div
           style={{
@@ -105,7 +105,7 @@ export default function Card2({carddata,id}) {
             }}
             onClick={()=>{navigate(`/results/${id}`)}}
           >
-           {carddata.product_colors.length==0?"ADD TO CART":"SELECT SHADE"}
+           {carddata.status=="STOCK"? "ADD TO CART":"SELECT SHADE"}
           </Button>
         </div>
       </Card.Body>

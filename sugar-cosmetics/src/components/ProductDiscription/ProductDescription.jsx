@@ -14,7 +14,7 @@ import { varient, varient2, varient3 } from "./varients";
 // import { product } from "../../db";
 import swal from "sweetalert";
 import { Appcontext } from "../../context/AppContext";
-
+import ProductService from "../../app/service/product.service";
 export default function ProductDiscription() {
   const [loading, setLoading] = useState(false);
   const [data, setdata] = useState([]);
@@ -23,20 +23,18 @@ export default function ProductDiscription() {
 
   useEffect(() => {
     // 👇️ scroll to top on page load
-    window.scrollTo({top: 0, left: 0, behavior: 'smooth'});
+    window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
   }, [id]);
 
   useEffect(() => {
-    function returnfetch() {
-      return fetch(
-        `https://makeup-api.herokuapp.com/api/v1/products/${id}.json?`
-      ).then((res) => res.json());
+    async function returnfetch() {
+      const res = await ProductService.getById(id);
+      console.log("res", res);
+      setdata(res.data);
+      setThumbsrc(`data:image/jpeg;base64,${res.data.photo}`);
     }
+    returnfetch();
 
-    returnfetch().then((res) => {
-      setdata(res);
-      console.log(data.product_colors.length);
-    });
   }, [id]);
 
   const createarrofsize = (n) => {
@@ -48,57 +46,55 @@ export default function ProductDiscription() {
   };
 
   const navigate = useNavigate();
-  const [thumbsrc, setThumbsrc] = useState(
-    `https://cdn.shopify.com/s/files/1/0906/2558/products/BeginnersEssentialsCombo3-WBGimages.jpg?v=1630683820`
-  );
+  const [thumbsrc, setThumbsrc] = useState(``);
   const [pincode, setPincode] = useState("");
   const [delivery, setDelivery] = useState("");
-  const { Addtocart, AddtoWishlist, Loginstate,cart,wishlist } = useContext(Appcontext);
-  console.log(cart,wishlist);
+  const { Addtocart, AddtoWishlist, Loginstate, cart, wishlist } = useContext(Appcontext);
+  console.log(cart, wishlist);
 
-  const checkcartAvailable=(data)=>{
-    if(cart.length>=7){
-       return false(
-        swal({
-          text:"Item limit exceeded in cart! clear it or checkout now!",
-          buttons:false,
-          icon:"info"
-        })
-       )
-    }
-        let checkavail=cart.filter((el)=>{
-          return el.id==data.id
-        });
-        
-        if(checkavail.length>0){
-          return false;
-        }
-        else{
-          return true;
-        }
-  }
-
-  const checkwishAvailable=(data)=>{
-    if(wishlist.length>=3){
+  const checkcartAvailable = (data) => {
+    if (cart.length >= 7) {
       return false(
         swal({
-          buttons:false,
-          text:"More items cannot be added to wishlist",
-          icon:"error"
+          text: "Item limit exceeded in cart! clear it or checkout now!",
+          buttons: false,
+          icon: "info"
         })
       )
     }
-    let checkavailw=wishlist.filter((el)=>{
-      return el.id==data.id
+    let checkavail = cart.filter((el) => {
+      return el.id == data.id
     });
 
-    if(checkavailw.length>0){
+    if (checkavail.length > 0) {
       return false;
     }
-    else{
+    else {
       return true;
     }
-}
+  }
+
+  const checkwishAvailable = (data) => {
+    if (wishlist.length >= 3) {
+      return false(
+        swal({
+          buttons: false,
+          text: "More items cannot be added to wishlist",
+          icon: "error"
+        })
+      )
+    }
+    let checkavailw = wishlist.filter((el) => {
+      return el.id == data.id
+    });
+
+    if (checkavailw.length > 0) {
+      return false;
+    }
+    else {
+      return true;
+    }
+  }
 
   const thumbnails = [
     `${data.api_featured_image}`,
@@ -154,7 +150,7 @@ export default function ProductDiscription() {
                 flexDirection: "column",
               }}
             >
-              {thumbnails.map((el) => {
+              {/* {thumbnails.map((el) => {
                 return (
                   <div
                     id={el}
@@ -176,7 +172,25 @@ export default function ProductDiscription() {
                     />
                   </div>
                 );
-              })}
+              })} */}
+              <div
+                style={{
+                  width: "74px",
+                  height: "74px",
+                  borderRadius: "12px",
+                  margin: "3px 12px",
+                }}
+                onMouseOver={() => {
+                  setThumbsrc(`data:image/jpeg;base64,${data.photo}`);
+                  document.getElementById(1).style.border = "2px solid";
+                }}
+              >
+                <img
+                  src={`data:image/jpeg;base64,${data.photo}`}
+                  alt=""
+                  style={{ width: "50px", height: "68px" }}
+                />
+              </div>
             </div>
             <div
               style={{
@@ -236,6 +250,7 @@ export default function ProductDiscription() {
                 <span style={{ color: "#212121", fontSize: "20px" }}>
                   {data.name}
                 </span>
+
               </div>
               <div style={{ width: "24px", height: "23px" }}>
                 <svg
@@ -282,6 +297,9 @@ export default function ProductDiscription() {
                 </span>
               </span>
             </div>
+            <span style={{ color: "#212121", fontSize: "14px" }}>
+              {data.description}
+            </span>
           </div>
           <div style={{ width: "683px", height: "782px" }}>
             {/* ------------------------------------------variant selector----------------------------------------------- */}
@@ -313,7 +331,7 @@ export default function ProductDiscription() {
                     paddingLeft: "0px",
                   }}
                 >
-                  <span>{data.name}</span>
+                  {/* <span>{data.name}</span> */}
                 </div>
                 <div
                   style={{
@@ -342,7 +360,7 @@ export default function ProductDiscription() {
                 }}
               >
                 {varient.map((el) => {
-                
+
                   // let hex=el.hex_value;
                   return (
                     <div
@@ -385,7 +403,7 @@ export default function ProductDiscription() {
                     paddingLeft: "0px",
                   }}
                 >
-                  <span>{data.name}</span>
+                  {/* <span>{data.name}</span> */}
                 </div>
                 <div
                   style={{
@@ -414,7 +432,7 @@ export default function ProductDiscription() {
                 }}
               >
                 {varient2.map((el) => {
-                 
+
                   // let hex=el.hex_value;
                   return (
                     <div
@@ -457,7 +475,7 @@ export default function ProductDiscription() {
                     paddingLeft: "0px",
                   }}
                 >
-                  <span>{data.name}</span>
+                  {/* <span>{data.name}</span> */}
                 </div>
                 <div
                   style={{
@@ -486,7 +504,7 @@ export default function ProductDiscription() {
                 }}
               >
                 {varient3.map((el) => {
-              
+
                   // let hex=el.hex_value;
                   return (
                     <div
@@ -514,7 +532,7 @@ export default function ProductDiscription() {
 
             {/* --------------------------------------------------------------avail offer -------------------------------------------------- */}
 
-            <div
+            {/* <div
               style={{
                 width: "683px",
                 height: "200px",
@@ -536,7 +554,7 @@ export default function ProductDiscription() {
                 }}
                 alt=""
               />
-            </div>
+            </div> */}
             <div
               style={{
                 display: "flex",
@@ -555,20 +573,24 @@ export default function ProductDiscription() {
                   alignItems: "center",
                   justifyContent: "center",
                 }}
-                onClick={() => {if(Loginstate.isAuth==true && checkwishAvailable(data)==true){
-                  AddtoWishlist(data);
-                  swal({
-                    title: "Added To Wishlist",
-                    text: "Product added successfully to your wish list",
-                    buttons: false,
-                    icon: "success",
-                  }); }
-                  else{swal({
-                    title: "Login Now or Item limit exceeded",
-                    text: "or maybe Item is already exists in wishlist!",
-                    buttons: false,
-                    icon: "info",
-                  });}
+                onClick={() => {
+                  if (Loginstate.isAuth == true && checkwishAvailable(data) == true) {
+                    AddtoWishlist(data);
+                    swal({
+                      title: "Added To Wishlist",
+                      text: "Product added successfully to your wish list",
+                      buttons: false,
+                      icon: "success",
+                    });
+                  }
+                  else {
+                    swal({
+                      title: "Login Now or Item limit exceeded",
+                      text: "or maybe Item is already exists in wishlist!",
+                      buttons: false,
+                      icon: "info",
+                    });
+                  }
                 }}
               >
                 <svg
@@ -594,22 +616,22 @@ export default function ProductDiscription() {
                   fontWeight: "bold",
                 }}
                 onClick={() => {
-                  if(checkcartAvailable(data)==true){
-                  Addtocart(data);
-                  swal({
-                    buttons:false,
-                    title:"Item Added To Cart",
-                    text:"Item Added to cart successfully!",
-                    icon:"success"
-                  })
-                }else{
-                  swal({
-                    buttons:false,
-                    title:"Item already exists!",
-                    text:"Item already exists in cart!",
-                    icon:"error"
-                  })
-                }
+                  if (checkcartAvailable(data) == true) {
+                    Addtocart(data);
+                    swal({
+                      buttons: false,
+                      title: "Item Added To Cart",
+                      text: "Item Added to cart successfully!",
+                      icon: "success"
+                    })
+                  } else {
+                    swal({
+                      buttons: false,
+                      title: "Item already exists!",
+                      text: "Item already exists in cart!",
+                      icon: "error"
+                    })
+                  }
                 }}
               >
                 ADD TO CART
@@ -632,7 +654,7 @@ export default function ProductDiscription() {
               flexDirection: "column",
             }}
           >
-            <div
+            {/* <div
               style={{
                 width: "663px",
                 height: "40px",
@@ -688,9 +710,9 @@ export default function ProductDiscription() {
                   CHECK
                 </button>
               )}
-            </div>
+            </div> */}
 
-            <div
+            {/* <div
               style={{
                 width: "643px",
                 height: "38px",
@@ -709,7 +731,7 @@ export default function ProductDiscription() {
                   Please enter a valid 6 digit pincode
                 </h6>
               )}
-            </div>
+            </div> */}
 
             <div
               style={{
@@ -884,20 +906,24 @@ export default function ProductDiscription() {
               alignItems: "center",
               justifyContent: "center",
             }}
-            onClick={() => {if(Loginstate.isAuth==true && checkwishAvailable(data)==true){
-              AddtoWishlist(data);
-              swal({
-                title: "Added To Wishlist",
-                text: "Product added successfully to your wish list",
-                buttons: false,
-                icon: "success",
-              }); }
-              else{swal({
-                title: "Login Now to Add to Wishlist",
-                text: "or maybe Item is already exists in wishlist!",
-                buttons: false,
-                icon: "info",
-              });}
+            onClick={() => {
+              if (Loginstate.isAuth == true && checkwishAvailable(data) == true) {
+                AddtoWishlist(data);
+                swal({
+                  title: "Added To Wishlist",
+                  text: "Product added successfully to your wish list",
+                  buttons: false,
+                  icon: "success",
+                });
+              }
+              else {
+                swal({
+                  title: "Login Now to Add to Wishlist",
+                  text: "or maybe Item is already exists in wishlist!",
+                  buttons: false,
+                  icon: "info",
+                });
+              }
             }}
           >
             <svg
@@ -924,22 +950,22 @@ export default function ProductDiscription() {
               fontWeight: "bold",
             }}
             onClick={() => {
-              if(checkcartAvailable(data)==true){
-              Addtocart(data);
-              swal({
-                buttons:false,
-                title:"Item Added To Cart",
-                text:"Item Added to cart successfully!",
-                icon:"success"
-              })
-            }else{
-              swal({
-                buttons:false,
-                title:"Item already exists!",
-                text:"Item already exists in cart!",
-                icon:"error"
-              })
-            }
+              if (checkcartAvailable(data) == true) {
+                Addtocart(data);
+                swal({
+                  buttons: false,
+                  title: "Item Added To Cart",
+                  text: "Item Added to cart successfully!",
+                  icon: "success"
+                })
+              } else {
+                swal({
+                  buttons: false,
+                  title: "Item already exists!",
+                  text: "Item already exists in cart!",
+                  icon: "error"
+                })
+              }
             }}
           >
             ADD TO CART

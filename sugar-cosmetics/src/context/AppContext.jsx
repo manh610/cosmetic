@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 export const Appcontext = React.createContext();
 
@@ -8,6 +8,15 @@ export function Appcontextprovider({ children }) {
     userdata: null,
   });
 
+  useEffect(() => {
+    const currentUser = localStorage.getItem('currentUser');
+    if (currentUser) {
+      setLoginState({
+        isAuth: true,
+        userdata: JSON.parse(currentUser)
+      });
+    }
+  }, []);
 
   // for testing---------------------------
   // const [Loginstate, setLoginState] = useState({
@@ -34,6 +43,7 @@ export function Appcontextprovider({ children }) {
   const [searchInput,setSearchInput]=useState("");
 
   const LoginUser = (userinfo) => {
+    localStorage.setItem('currentUser', JSON.stringify(userinfo));
     setLoginState({
       isAuth: true,
       userdata: userinfo,
@@ -41,6 +51,7 @@ export function Appcontextprovider({ children }) {
   };
 
   const LogoutUser = () => {
+    localStorage.removeItem('currentUser');
     setLoginState({
       isAuth: false,
       userdata: null,

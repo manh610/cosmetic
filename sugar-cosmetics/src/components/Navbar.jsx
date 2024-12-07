@@ -7,14 +7,31 @@ import {
 import { Link, useNavigate } from "react-router-dom";
 import { useState, useContext, useEffect } from "react";
 import { Appcontext } from "../context/AppContext";
+import CategoryService from "../app/service/category.service";
 
 export default function Navbar() {
   const { cart } = useContext(Appcontext);
+
+  const [categories, setCategories] = useState([]);
 
   useEffect(() => {
     // 👇️ scroll to top on page load
     window.scrollTo({ top: 0, left: 0, behavior: "smooth" });
   }, []);
+
+  useEffect(() => {
+    getCategories();
+  }, []);
+
+  const getCategories = async () => {
+    const res = await CategoryService.search({
+      pageIndex: 1,
+      pageSize: 10
+    });
+    console.log(res);
+
+    setCategories(res.data);
+  };
 
   // const [colorChange, setColorchange] = useState(false);
 
@@ -181,7 +198,7 @@ export default function Navbar() {
           </div>
         </div>
 
-        <div className="Navbar_second">
+        {/* <div className="Navbar_second">
           <div className="menucontainer">
             <Link className="dropdown" to="/MakeUp">
               Makeup
@@ -211,6 +228,16 @@ export default function Navbar() {
             <Link className="dropdown" to="/Gifting">
               Diwali Gifting
             </Link>
+          </div>
+        </div> */}
+
+        * <div className="Navbar_second">
+          <div className="menucontainer">
+            {categories.map((category) => (
+              <Link className="dropdown" to={`category/${category.id}`}>
+                {category.name}
+              </Link>
+            ))}
           </div>
         </div>
       </div>
