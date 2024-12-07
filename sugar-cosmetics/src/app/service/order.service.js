@@ -33,6 +33,16 @@ const OrderService = {
     }
   },
 
+  getByUserId: async (userId) => {
+    try {
+      const response = await axios.get(`${API_URL}?userId=${userId}`);
+      return response.data;
+    } catch (error) {
+      console.error('Error getting orders by user ID:', error);
+      throw error;
+    }
+  },
+
 
 };
 

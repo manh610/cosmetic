@@ -64,37 +64,42 @@ export default function Cart() {
         addressId: defaultAddress?.id, 
         deliveryUnitId: "e831a7ba-668d-4f6c-9c21-6adbfcc5f3a7",
         deliveryType: "GTN",
-        paymentId: null,
-        deliveryDate: null,
+        paymentId: [cart.map((el) => el.id)].toString(),
+        deliveryDate: new Date().toISOString(),
         receiptDate: null,
         censor: null,
+        shipper: "Shipper",
+        isPayment: false,
+        status: "ACTIVE",
+        censor: "censor",
         // discountId: "d73e5c8d-3e35-4d98-b858-e53cef222f99",
-        productItem: [
-          {
-            productItemId: "074be936-c769-4d5d-a4b5-0cd00576bf22",
-            quantity: 2
-          },
-          {
-            productItemId: "01bf05fa-fc4f-4577-9359-5a576989f0c3", 
-            quantity: 1
-          }
-        ]
+        // productItem: [
+        //   {
+        //     productItemId: "074be936-c769-4d5d-a4b5-0cd00576bf22",
+        //     quantity: 2
+        //   },
+        //   {
+        //     productItemId: "01bf05fa-fc4f-4577-9359-5a576989f0c3", 
+        //     quantity: 1
+        //   }
+        // ]
       }
       console.log("payload", payload);
 
-      // await OrderService.create(payload);
+      const res = await OrderService.create(payload);
+      console.log("res", res);
 
       // ShowOrders(cart);
-      // swal({
-      //   title: "Order Placed Successfully!",
-      //   text: "You will be redirected! Thanks for Shopping with us! ",
-      //   icon: "success",
-      //   buttons: false,
-      // });
-      // setConfetti(true);
-      // setTimeout(() => {
-      //   navigate("/user/orders");
-      // }, 5000);
+      swal({
+        title: "Order Placed Successfully!",
+        text: "You will be redirected! Thanks for Shopping with us! ",
+        icon: "success",
+        buttons: false,
+      });
+      setConfetti(true);
+      setTimeout(() => {
+        navigate("/user/orders");
+      }, 3000);
       
     } catch (err) {
       console.log(err);
