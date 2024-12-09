@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useContext } from "react";
 import Navbar from "../Navbar";
@@ -8,12 +8,33 @@ import { Appcontext } from "../../context/AppContext";
 import Card2 from "../Makeup/Card";
 import Card from "react-bootstrap/Card";
 import Footer from "../Footer";
+import OrderService from "../../app/service/order.service";
+import ProductService from "../../app/service/product.service";
 
 export default function FinalOrdersPage() {
   const navigate = useNavigate();
-  const { orders, ShowOrders, Loginstate } = useContext(Appcontext);
+  const { ShowOrders, Loginstate } = useContext(Appcontext);
+  const [orders, setOrders] = useState([]);
   // console.log(orders);
+  useEffect(() => {
+    getOrders();
+  }, []);
 
+  const getOrders = async () => {
+    const res = await OrderService.getByUserId(Loginstate.userdata.id);
+    console.log("res", res);
+    for (const order of res.data) {
+      let items = [];
+      const itemIds = order.paymentId.split(",");
+      for (const itemId of itemIds) {
+        const item = await ProductService.getById(itemId);
+        items.push(item.data);
+      }
+      order.items = items;
+    }
+    console.log("res", res);
+    setOrders(res.data);
+  }
   return (
     <>
       <Navbar />
@@ -407,7 +428,7 @@ export default function FinalOrdersPage() {
                       }}
                     >
                       <Card.Body style={{ margin: "auto" }}>
-                        <Link to={`/results/${el.id}`}>
+                        <Link to={`/results/${el.items[0].id}`}>
                           <Card.Img
                             style={{
                               width: "100px",
@@ -416,7 +437,7 @@ export default function FinalOrdersPage() {
                               marginTop: "0px",
                             }}
                             variant="top"
-                            src={`data:image/jpeg;base64,${el.photo}`}
+                            src={`data:image/jpeg;base64,${el.items[0].photo}`}
                           />
                         </Link>
                         <Card.Title
@@ -427,7 +448,7 @@ export default function FinalOrdersPage() {
                             marginTop: "10px",
                           }}
                         >
-                          {el.name} <span> ₹ {el.price}</span>
+                          {el.items[0].name} <span> ₹ {el.items[0].price}</span>
                         </Card.Title>
                         <Card.Subtitle
                           className="mb-2 text-muted"
