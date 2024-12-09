@@ -5,7 +5,7 @@ import "./chat.css";
 import { FaCamera } from "react-icons/fa6";
 import { Modal } from 'antd';
 
-const API_KEY = "AIzaSyDR-x6019ezk2PfbX3QA5Irqcuf-l61XEs";
+const API_KEY = "";
 
 const systemMessage = {
   "role": "user", "content": "Trả lời bằng tiếng việt."
