@@ -15,9 +15,11 @@ import { varient, varient2, varient3 } from "./varients";
 import swal from "sweetalert";
 import { Appcontext } from "../../context/AppContext";
 import ProductService from "../../app/service/product.service";
+import { toast } from "react-toastify";
 export default function ProductDiscription() {
   const [loading, setLoading] = useState(false);
   const [data, setdata] = useState([]);
+  const [categoryId, setCategoryId] = useState('');
   const { id } = useParams();
   console.log(id);
 
@@ -32,6 +34,9 @@ export default function ProductDiscription() {
       console.log("res", res);
       setdata(res.data);
       setThumbsrc(`data:image/jpeg;base64,${res.data.photo}`);
+      setCategoryId(res.data.categoryId);
+      console.log(res.data.categoryId);
+
     }
     returnfetch();
 
@@ -102,11 +107,19 @@ export default function ProductDiscription() {
     "https://assets.myntassets.com/dpr_1.5,q_60,w_400,c_limit,fl_progressive/assets/images/18754268/2022/7/11/0db7bde4-e917-4031-8990-bcb1a7d305bf1657518696310SUGARContourDeForceEyesAndFacePalette01-WarmWin1.jpg",
     "https://cdn.shopify.com/s/files/1/0906/2558/products/BeginnersEssentialsCombo3-WBGimages.jpg?v=1630683820",
   ];
+
+  const [rating] = useState(4.9);
+  const [reviews] = useState(102);
+  const [sold] = useState(488);
+  const [originalPrice] = useState(2128000);
+  const [salePrice] = useState(0);
+  const [flashSaleTime] = useState({ hours: 0, minutes: 15, seconds: 54 });
+
   return (
-    <>
+    <div >
       <Navbar />
       <div id="add_div"></div>
-      <div className="breadcrumbs1">
+      <div className="breadcrumbs1" style={{ marginTop: '25px' }}>
         <span
           style={{ color: "gray", cursor: "pointer" }}
           onClick={() => navigate("/")}
@@ -131,7 +144,7 @@ export default function ProductDiscription() {
       {/* ------------------------------------------------------thumbnail carousel----------------------------------------------- */}
 
       <div className="description_data">
-        <div style={{ width: "492px", height: "1296px" }}>
+        <div style={{ width: "492px", height: "100%", marginTop: '50px' }}>
           <div
             style={{
               width: "492px",
@@ -213,312 +226,134 @@ export default function ProductDiscription() {
         <div
           style={{
             width: "683px",
-            height: "1256px",
+            height: "100%",
             dispaly: "flex",
             alignItems: "center",
             justifyContent: "space-between",
             flexDirection: "column",
           }}
         >
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "left",
-              flexDirection: "column",
-            }}
-          >
-            <div
-              style={{
-                width: "683px",
-                height: "23px",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "left",
-                marginBottom: "10px",
-              }}
-            >
-              <div
-                style={{
-                  width: "649px",
-                  height: "23px",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "left",
-                }}
-              >
-                <span style={{ color: "#212121", fontSize: "20px" }}>
-                  {data.name}
-                </span>
+          <div className="product-header" style={{ padding: '20px' }}>
+            <div className="product-title" style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '10px'
+            }}>
+              <h1 style={{ fontSize: '24px', fontWeight: 'bold' }}>{data.name}</h1>
+            </div>
 
-              </div>
-              <div style={{ width: "24px", height: "23px" }}>
-                <svg
-                  onClick={() => {
-                    swal({
-                      icon: "info",
-                      text: "Not Available For Now!",
-                      buttons: false,
-                    });
-                  }}
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="20"
-                  cursor="pointer"
-                  height="20"
-                  fill="#757575"
-                  viewBox="0 0 448 512"
-                >
-                  <path d="M352 224c53 0 96-43 96-96s-43-96-96-96s-96 43-96 96c0 4 .2 8 .7 11.9l-94.1 47C145.4 170.2 121.9 160 96 160c-53 0-96 43-96 96s43 96 96 96c25.9 0 49.4-10.2 66.6-26.9l94.1 47c-.5 3.9-.7 7.8-.7 11.9c0 53 43 96 96 96s96-43 96-96s-43-96-96-96c-25.9 0-49.4 10.2-66.6 26.9l-94.1-47c.5-3.9 .7-7.8 .7-11.9s-.2-8-.7-11.9l94.1-47C302.6 213.8 326.1 224 352 224z" />
+            <div className="product-stats" style={{
+              display: 'flex',
+              gap: '20px',
+              margin: '10px 0',
+              alignItems: 'center'
+            }}>
+              <span className="rating" style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="#ee4d2d" viewBox="0 0 16 16">
+                  <path d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z" />
                 </svg>
+                {rating}
+              </span> |
+              <span className="reviews">{reviews} Đánh Giá</span> |
+              <span className="sold">{sold} Đã Bán</span>
+            </div>
+
+            <div className="flash-sale" style={{
+              background: '#222222',
+              padding: '10px',
+              borderRadius: '4px'
+            }}>
+              <div className="flash-sale-header" style={{
+                display: 'flex',
+                justifyContent: 'space-between'
+              }}>
+                <span style={{color: '#ee4d2d', fontWeight: 'bold' }}>FLASH SALE</span>
+                <div className="countdown">
+                  <span style={{color: '#fff'}}>KẾT THÚC TRONG</span>
+                  <div className="timer" style={{ color: '#fff', display: 'inline-block', marginLeft: '10px' }}>
+                    1 giờ
+                  </div>
+                </div>
+              </div>
+
+              <div className="price-container" style={{ marginTop: '10px' }}>
+                <span className="sale-price" style={{
+                  color: '#ee4d2d',
+                  fontSize: '24px',
+                  fontWeight: 'bold'
+                }}>₫{data?.minPrice?.toLocaleString()}</span>
+                <span className="original-price" style={{
+                  color: '#929292',
+                  textDecoration: 'line-through',
+                  marginLeft: '10px'
+                }}>₫{(data?.minPrice*1.5).toLocaleString()}</span>
               </div>
             </div>
 
-            <div
-              style={{
-                width: "683px",
-                height: "18px",
-                display: "flex",
-                marginTop: "5px",
-                alignItems: "center",
-                justifyContent: "left",
-                marginLeft: "10px",
-              }}
-            >
-              <span
-                style={{
-                  fontSize: "18px",
-                  color: "#212121",
-                  fontWeight: "normal",
-                }}
-              >
-                ₹{data.price}
-                <span style={{ color: "#FC2779", fontSize: "14px" }}>
-                  ( 20% Off)
-                </span>
-              </span>
+            <div className="shop-vouchers" style={{ margin: '20px 0' }}>
+              <div className="voucher-label">Mã Giảm Giá Của Shop</div>
+              <div className="voucher-list" style={{
+                display: 'flex',
+                gap: '10px',
+                marginTop: '10px',
+              }}>
+                <span onClick={() => toast.error(`Mã giảm giá không khả dụng`)} className="voucher" style={{
+                  padding: '4px 8px',
+                  border: '1px solid #ee4d2d',
+                  color: '#ee4d2d',
+                  borderRadius: '2px',
+                  cursor: 'pointer'
+                }}>Giảm 10%</span>
+                <span onClick={() => toast.error(`Mã giảm giá không khả dụng`)} className="voucher" style={{
+                  padding: '4px 8px',
+                  border: '1px solid #ee4d2d',
+                  color: '#ee4d2d',
+                  borderRadius: '2px',
+                  cursor: 'pointer'
+                }}>Giảm 45%</span>
+                <span onClick={() => toast.error(`Mã giảm giá không khả dụng`)} className="voucher" style={{
+                  padding: '4px 8px',
+                  border: '1px solid #ee4d2d',
+                  color: '#ee4d2d',
+                  borderRadius: '2px',
+                  cursor: 'pointer'
+                }}>Giảm 35%</span>
+                <span onClick={() => toast.error(`Mã giảm giá không khả dụng`)} className="voucher" style={{
+                  padding: '4px 8px',
+                  border: '1px solid #ee4d2d',
+                  color: '#ee4d2d',
+                  borderRadius: '2px',
+                  cursor: 'pointer'
+                }}>Giảm 35%</span>
+              </div>
             </div>
-            <span style={{ color: "#212121", fontSize: "14px" }}>
-              {data.description}
-            </span>
+
+            <div className="shipping-info" style={{
+              padding: '20px 0',
+              borderTop: '1px solid #f5f5f5'
+            }}>
+              <div className="label">Vận Chuyển</div>
+              <div className="shipping-details" style={{
+                display: 'flex',
+                gap: '10px',
+                marginTop: '10px'
+              }}>
+                <img src="/shipping-icon.png" alt="shipping" />
+                <div>
+                  <div>Nhận từ 14 Th12 - 16 Th12, phí giao ₫0</div>
+                  <div className="note" style={{
+                    color: '#929292',
+                    fontSize: '12px'
+                  }}>Tặng Voucher ₫15.000 nếu đơn giao sau thời gian trên</div>
+                </div>
+              </div>
+            </div>
           </div>
-          <div style={{ width: "683px", height: "782px" }}>
+
+          <div style={{ width: "683px"}}>
             {/* ------------------------------------------variant selector----------------------------------------------- */}
 
-            <div style={{ color: "lightgray", height: "5px" }}>
-              ──────────────────────────────────────────────────────────────
-            </div>
-            <div style={{ width: "683px", height: "92px" }} className="varient_sel" >
-              <div
-                style={{
-                  width: "683px",
-                  height: "40px",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "left",
-                  flexDirection: "column",
-                  marginTop: "10px",
-                }}
-              >
-                <div
-                  style={{
-                    width: "683px",
-                    height: "23px",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "left",
-                    color: "#212121",
-                    fontSize: "14px",
-                    paddingLeft: "0px",
-                  }}
-                >
-                  {/* <span>{data.name}</span> */}
-                </div>
-                <div
-                  style={{
-                    width: "683px",
-                    height: "17px",
-                    display: "flex",
-                    marginBottom: "10px",
-                    alignItems: "center",
-                    justifyContent: "left",
-                    color: "#757575",
-                    fontSize: "12px",
-                    paddingLeft: "5px",
-                  }}
-                >
-                  <span>Varient</span>
-                </div>
-              </div>
-
-              <div
-                style={{
-                  width: "683px",
-                  height: "52px",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "space-evenly",
-                }}
-              >
-                {varient.map((el) => {
-
-                  // let hex=el.hex_value;
-                  return (
-                    <div
-                      style={{
-                        width: "40px",
-                        height: "40px",
-                        borderRadius: "8px",
-                        backgroundColor: `${el.hex_value}`,
-                      }}
-                    ></div>
-                  );
-                })}
-              </div>
-            </div>
-
-            <div style={{ color: "lightgray", height: "5px" }} className="varient_sel">
-              ──────────────────────────────────────────────────────────────
-            </div>
-            <div style={{ width: "683px", height: "92px" }} className="varient_sel">
-              <div
-                style={{
-                  width: "683px",
-                  height: "40px",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "left",
-                  flexDirection: "column",
-                  marginTop: "10px",
-                }}
-              >
-                <div
-                  style={{
-                    width: "683px",
-                    height: "23px",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "left",
-                    color: "#212121",
-                    fontSize: "14px",
-                    paddingLeft: "0px",
-                  }}
-                >
-                  {/* <span>{data.name}</span> */}
-                </div>
-                <div
-                  style={{
-                    width: "683px",
-                    height: "17px",
-                    display: "flex",
-                    marginBottom: "10px",
-                    alignItems: "center",
-                    justifyContent: "left",
-                    color: "#757575",
-                    fontSize: "12px",
-                    paddingLeft: "5px",
-                  }}
-                >
-                  <span>Varient</span>
-                </div>
-              </div>
-
-              <div
-                style={{
-                  width: "683px",
-                  height: "52px",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "space-evenly",
-                }}
-              >
-                {varient2.map((el) => {
-
-                  // let hex=el.hex_value;
-                  return (
-                    <div
-                      style={{
-                        width: "40px",
-                        height: "40px",
-                        borderRadius: "8px",
-                        backgroundColor: `${el.hex_value}`,
-                      }}
-                    ></div>
-                  );
-                })}
-              </div>
-            </div>
-
-            <div style={{ color: "lightgray", height: "5px" }} className="varient_sel">
-              ──────────────────────────────────────────────────────────────
-            </div>
-            <div style={{ width: "683px", height: "92px" }} className="varient_sel">
-              <div
-                style={{
-                  width: "683px",
-                  height: "40px",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "left",
-                  flexDirection: "column",
-                  marginTop: "10px",
-                }}
-              >
-                <div
-                  style={{
-                    width: "683px",
-                    height: "23px",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "left",
-                    color: "#212121",
-                    fontSize: "14px",
-                    paddingLeft: "0px",
-                  }}
-                >
-                  {/* <span>{data.name}</span> */}
-                </div>
-                <div
-                  style={{
-                    width: "683px",
-                    height: "17px",
-                    display: "flex",
-                    marginBottom: "10px",
-                    alignItems: "center",
-                    justifyContent: "left",
-                    color: "#757575",
-                    fontSize: "12px",
-                    paddingLeft: "5px",
-                  }}
-                >
-                  <span>Varient</span>
-                </div>
-              </div>
-
-              <div
-                style={{
-                  width: "683px",
-                  height: "52px",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "space-evenly",
-                }}
-              >
-                {varient3.map((el) => {
-
-                  // let hex=el.hex_value;
-                  return (
-                    <div
-                      style={{
-                        width: "40px",
-                        height: "40px",
-                        borderRadius: "8px",
-                        backgroundColor: `${el.hex_value}`,
-                      }}
-                    ></div>
-                  );
-                })}
-              </div>
-            </div>
+       
 
             <div
               style={{
@@ -529,32 +364,6 @@ export default function ProductDiscription() {
             >
               ──────────────────────────────────────────────────────────────
             </div>
-
-            {/* --------------------------------------------------------------avail offer -------------------------------------------------- */}
-
-            {/* <div
-              style={{
-                width: "683px",
-                height: "200px",
-                backgroundColor: "rgba(243, 240, 240, 0.974)",
-              }}
-            >
-              <img
-                src="https://i.postimg.cc/m2SZWXyS/avail-offer.jpg"
-                onClick={() => {
-                  navigate("/Offers");
-                }}
-                style={{
-                  cursor: "pointer",
-                  width: "683px",
-                  height: "190px",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
-                alt=""
-              />
-            </div> */}
             <div
               style={{
                 display: "flex",
@@ -755,11 +564,15 @@ export default function ProductDiscription() {
               <Accordion flush style={{ width: "683px", height: "245px" }}>
                 <Accordion.Item eventKey="0">
                   <Accordion.Header>DESCRIPTION</Accordion.Header>
-                  <Accordion.Body>{data.description}</Accordion.Body>
+                  <Accordion.Body>
+                    <div dangerouslySetInnerHTML={{ __html: data.description }} />
+                  </Accordion.Body>
                 </Accordion.Item>
                 <Accordion.Item eventKey="1">
-                  <Accordion.Header>HOW TO APPLY</Accordion.Header>
-                  <Accordion.Body>{data.description}</Accordion.Body>
+                    <Accordion.Header>DETAILS</Accordion.Header>
+                    <Accordion.Body>
+                    <div dangerouslySetInnerHTML={{ __html: data.description }} />
+                  </Accordion.Body>
                 </Accordion.Item>
                 <Accordion.Item eventKey="2">
                   <Accordion.Header>INGREDIENTS</Accordion.Header>
@@ -789,7 +602,7 @@ export default function ProductDiscription() {
 
       {/* -------------------------recommended-------------------------------------------------------------- */}
       <div style={{ width: "100%", height: "150px" }}></div>
-      <Recommended />
+      <Recommended categoryId={categoryId} />
 
       {/* ----------------------------------------------fixed under bar----------------------------------------------------------- */}
 
@@ -975,11 +788,11 @@ export default function ProductDiscription() {
 
       {/* ------------------------------shop form recent------------------------------------------------------------------
        */}
-      <ShopFromRecentlyViewed />
+      <ShopFromRecentlyViewed categoryId={categoryId} />
 
       {/* -----------------------------------------------footer----------------------------------------------------------------- */}
 
       <Footer />
-    </>
+    </div>
   );
 }

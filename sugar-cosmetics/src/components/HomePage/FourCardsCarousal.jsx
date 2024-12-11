@@ -7,13 +7,15 @@ function FourCardsCarousel({ BestSellersData }) {
       <Carousel variant="dark" slide={false} className="bestseller_carousal">
         <Carousel.Item>
           <div className="CardCrousel">
-            <CardCarousel
-              src1={BestSellersData[0].image_link}
-              text={BestSellersData[0].name}
-              prod_id={BestSellersData[0].id}
-              price={BestSellersData[0].price}
-            />
-            <CardCarousel
+            {BestSellersData.map((el, index) => (
+              <CardCarousel
+                src1={`data:image/jpeg;base64,${el.photo}`}
+                text={el.name}
+                prod_id={el.id}
+                price={el.minPrice}
+              />
+            ))}
+            {/* <CardCarousel
               src1={BestSellersData[1].image_link}
               text={BestSellersData[1].name}
               prod_id={BestSellersData[1].id}
@@ -30,7 +32,7 @@ function FourCardsCarousel({ BestSellersData }) {
               text={BestSellersData[3].name}
               prod_id={BestSellersData[3].id}
               price={BestSellersData[3].price}
-            />
+            /> */}
           </div>
         </Carousel.Item>
 
@@ -92,7 +94,7 @@ function FourCardsCarousel({ BestSellersData }) {
           </div>
         </Carousel.Item> */}
       </Carousel>
-      <Carousel variant="dark" slide={false} className="CardCrousel_Ipad">
+      {/* <Carousel variant="dark" slide={false} className="CardCrousel_Ipad">
         <Carousel.Item>
           <div className="CardCrousel">
             <CardCarousel
@@ -177,7 +179,7 @@ function FourCardsCarousel({ BestSellersData }) {
             />
           </div>
         </Carousel.Item>
-      </Carousel>
+      </Carousel> */}
     </>
   );
 }

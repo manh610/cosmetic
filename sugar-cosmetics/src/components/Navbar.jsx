@@ -234,7 +234,7 @@ export default function Navbar() {
         * <div className="Navbar_second">
           <div className="menucontainer">
             {categories.map((category) => (
-              <Link className="dropdown" to={`category/${category.id}`}>
+              <Link className="dropdown" to={`/category/${category.id}`}>
                 {category.name}
               </Link>
             ))}

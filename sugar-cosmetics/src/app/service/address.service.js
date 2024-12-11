@@ -48,6 +48,15 @@ const AddressService = {
         return res.data;
     },
 
+    deleteAddress: async (id) => {
+        const res = await axios.delete(`${API_URL}/${id}`);
+        return res.data;
+    },
+
+    setAsDefault: async (userId, addressId) => {
+        const res = await axios.put(`${API_URL}/${userId}/${addressId}`);
+        return res.data;
+    },
 
 };
 

@@ -55,16 +55,17 @@ export default function FinalAddressPage() {
       icon: "warning",
       buttons: true,
       dangerMode: true,
-    }).then((willDelete) => {
+    }).then(async (willDelete) =>  {
       if (willDelete) {
-        let removeadd = address.filter((el) => {
-          return el.areaa !== addtoberemoved.areaa;
-        });
-
-        removeAddress(removeadd);
-        swal("Address has been removed from list!", {
-          icon: "success",
-        });
+        try {
+          await AddressService.deleteAddress(addtoberemoved.id);
+          fetchAddress();
+          swal("Address has been removed from list!", {
+            icon: "success",
+          });
+        } catch (error) {
+          console.error("Error deleting address:", error);
+        }
       } else {
       }
     });
@@ -78,12 +79,18 @@ export default function FinalAddressPage() {
       icon: "warning",
       buttons: true,
       dangerMode: true,
-    }).then((willDelete) => {
+    }).then(async (willDelete) => {
       if (willDelete) {
-        SettingDefaultAdd(el);
-        swal("Address has been set as default address", {
-          icon: "success",
-        });
+        try {
+          await AddressService.setAsDefault(Loginstate.userdata.id, el.id);
+          fetchAddress();
+          swal("Address has been set as default address", {
+            icon: "success",
+          });
+          fetchAddress();
+        } catch (error) {
+          console.error("Error setting address as default:", error);
+        }
       } else {
       }
     });
@@ -500,7 +507,7 @@ export default function FinalAddressPage() {
                 }}
               >
                 {address.map((el) => {
-                  if (el.isDefault) {
+                  if (el.default) {
                     return (
                       <div
                         style={{
@@ -513,6 +520,10 @@ export default function FinalAddressPage() {
                           flexDirection: "column",
                           alignItems: "center",
                           justifyContent: "center",
+                          padding: "10px",
+                          backgroundColor: "#f5f5f5",
+                          border: "2px solid #fc2779",
+                          position: "relative"
                         }}
                       >
                         <div
@@ -525,7 +536,7 @@ export default function FinalAddressPage() {
                             justifyContent: "space-between",
                           }}
                         >
-                          {el.fullName}
+                          {el.fullName} |  {el.phone}
                           <span
                             style={{ cursor: "pointer" }}
                             onClick={() => {
@@ -550,9 +561,10 @@ export default function FinalAddressPage() {
                             display: "flex",
                             alignItems: "center",
                             justifyContent: "left",
+                            marginTop: "10px",
                           }}
                         >
-                          {el.provinceFullName}
+                          {el.detail + ", " + el.wardFullName + ", " + el.districtFullName + ", " + el.provinceFullName}
                         </div>
                         <div
                           style={{
@@ -564,7 +576,7 @@ export default function FinalAddressPage() {
                             overflow: "auto",
                           }}
                         >
-                          {el.areaa}
+                          {el.addressType}
                         </div>
                         <div
                           style={{
@@ -580,14 +592,14 @@ export default function FinalAddressPage() {
                         <div
                           style={{
                             width: "400px",
-                            height: "25px",
+                            height: "20px",
                             display: "flex",
                             alignItems: "center",
                             justifyContent: "left",
                           }}
                         >
-                          <span>{el.statee}</span>
-                          <span style={{ marginLeft: "20px" }}>{el.cityy}</span>
+                          {/* <span>{el.statee}</span>
+                          <span style={{ marginLeft: "20px" }}>{el.addressType}</span> */}
                         </div>
                         <div
                           style={{
@@ -641,7 +653,7 @@ export default function FinalAddressPage() {
                             justifyContent: "space-between",
                           }}
                         >
-                          {el.fullName}{" "}
+                          {el.fullName + " | " + el.phone}
                           <span
                             style={{ cursor: "pointer" }}
                             onClick={() => {
@@ -668,7 +680,7 @@ export default function FinalAddressPage() {
                             justifyContent: "left",
                           }}
                         >
-                          {el.phone}
+                          {el.detail + ", " + el.wardFullName + ", " + el.districtFullName + ", " + el.provinceFullName}
                         </div>
                         <div
                           style={{
@@ -684,17 +696,7 @@ export default function FinalAddressPage() {
                         >
                           {el.addressType}
                         </div>
-                        <div
-                          style={{
-                            width: "400px",
-                            height: "20px",
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "left",
-                          }}
-                        >
-                          {el.detail}
-                        </div>
+                     
                         <div
                           style={{
                             width: "400px",
@@ -704,8 +706,6 @@ export default function FinalAddressPage() {
                             justifyContent: "left",
                           }}
                         >
-                          <span>{el.wardFullName}</span>
-                          <span style={{ marginLeft: "30px" }}>{el.districtFullName + ", " + el.provinceFullName}</span>
                         </div>
                       </div>
                     );
