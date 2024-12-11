@@ -1,0 +1,11 @@
+.cs-message-input__content-editor img {
+    height: 25px;
+    margin-right: 3px;
+    margin-left: 3px;
+    vertical-align: middle;
+}
+.cs-message__content-wrapper img {
+    width: 100%;
+    margin-top: 8px;
+    margin-bottom: 4px;
+}
