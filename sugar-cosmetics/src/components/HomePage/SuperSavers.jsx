@@ -6,9 +6,12 @@ import ProductService from "../../app/service/product.service";
 export default function SuperSaver() {
   const [supersaverData, setSupersaverData] = useState([]);
   useEffect(() => {
-    ProductService.search({}).then((res) => {
+    ProductService.search({
+      pageIndex: 1,
+      pageSize: 4
+    }).then((res) => {
       console.log("res", res);
-      setSupersaverData(res.data);
+      setSupersaverData([...res.data].sort(() => Math.random() - 0.5));
     });
   }, []);
   return (

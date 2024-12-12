@@ -30,6 +30,17 @@ export default function RightSide() {
   const [loading, setLoading] = useState(false);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [isLoginForm, setIsLoginForm] = useState(true);
+  const [registerForm, setRegisterForm] = useState({
+    username: '',
+    email: '',
+    phone: '',
+    givenName: '',
+    familyName: '',
+    gender: 'MALE',
+    dob: '',
+    password: ''
+  });
 
   // ------------------------------------------------function for captchaverfication invisible-----------------------------------
 
@@ -730,198 +741,259 @@ export default function RightSide() {
 
   // ------------------------------------------initial page-------------------------------------------------------
 
+  const handleRegister = () => {
+    // setLoading(true);
+    const payload = {
+      username: registerForm.username,
+      email: registerForm.email, 
+      phone: registerForm.phone,
+      citizenNumber: null,
+      givenName: registerForm.givenName,
+      familyName: registerForm.familyName,
+      gender: registerForm.gender,
+      dob: "1999-07-12T10:33:24.604",
+      country: "VN",
+      userRank: "MEMBER", 
+      avatar: null,
+      roleId: "01",
+      deliveryUnitId: "",
+      description: ""
+    }
+    console.log(payload);
+    authService.register(payload)
+      .then(res => {
+        swal({
+          title: "Đăng ký thành công",
+          text: "Vui lòng đăng nhập để tiếp tục",
+          icon: "success"
+        });
+        setIsLoginForm(true);
+        setLoading(false);
+      })
+      .catch(err => {
+        setLoading(false);
+        swal({
+          title: "Đăng ký thất bại",
+          text:  "Có lỗi xảy ra",
+          icon: "error"
+        });
+      });
+  };
+
   return (
-    <div
-      style={{
+    <div style={{
+      display: "flex",
+      flexDirection: "column",
+      alignItems: "center",
+      justifyContent: "space-between",
+      background: "url(https://media.sugarcosmetics.com/upload/loginPageBackGroundTexture.png)",
+      width: "64%",
+      height: "96vh",
+      fontFamily: "sans-serif",
+    }}>
+      <div style={{
         display: "flex",
-        flexDirection: "column",
         alignItems: "center",
-        justifyContent: "space-between",
-        background:
-          "url(https://media.sugarcosmetics.com/upload/loginPageBackGroundTexture.png)",
-        width: "64%",
-        height: "96vh",
-        fontFamily: "sans-serif",
-      }}
-    >
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "left",
-          paddingRight: "900px",
-          paddingTop: "5%",
-          paddingBottom: "5%",
-        }}
-      >
+        justifyContent: "left",
+        paddingRight: "900px",
+        paddingTop: "5%",
+        paddingBottom: "5%",
+      }}>
         <Link to="/">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="#757575"
-            width="60"
-            height="15"
-            viewBox="0 0 448 512"
-          >
+          <svg xmlns="http://www.w3.org/2000/svg" fill="#757575" width="60" height="15" viewBox="0 0 448 512">
             <path d="M9.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.2 288 416 288c17.7 0 32-14.3 32-32s-14.3-32-32-32l-306.7 0L214.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z" />
           </svg>
         </Link>
       </div>
+
       <div>
-        <img
-          style={{ width: "169px", height: "108px" }}
+        <img style={{ width: "169px", height: "108px" }}
           src="https://media.sugarcosmetics.com/upload/Hi!.png"
           alt=""
         />
-        <div style={{ margin: "auto" }}>
-          {/* <h6
-            style={{
-              fontWeight: "bold",
-              marginTop: "20px",
-              marginBottom: "30px",
-            }}
-          >
-            Login/Sign Up Using Phone
-          </h6> */}
-        </div>
       </div>
 
-      <div>
-        <InputGroup className="mb-3" style={{ width: "353px", height: "56px" }}>
-          <InputGroup.Text
-            id="basic-addon1" 
-            style={{ backgroundColor: "#fff" }}
-          >
-            <UserOutlined />
-          </InputGroup.Text>
-          <Form.Control
-            placeholder="Tên đăng nhập"
-            type="text"
-            aria-describedby="basic-addon1"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-          />
-        </InputGroup>
-
-        <InputGroup className="mb-3" style={{ width: "353px", height: "56px" }}>
-          <InputGroup.Text
-            id="basic-addon2"
-            style={{ backgroundColor: "#fff" }}
-          >
-            <LockOutlined />
-          </InputGroup.Text>
-          <Form.Control
-            placeholder="Mật khẩu" 
-            type="password"
-            aria-describedby="basic-addon2"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
-        </InputGroup>
-        <Form.Text id="passwordHelpBlock" muted></Form.Text>
-      </div>
-
-      {/* <div>
-        <p
-          style={{
-            width: "715px",
-            height: "75px",
-            color: "#757575",
-            fontSize: "14px",
-          }}
-        >
-          Đăng ký tài khoản để theo dõi trạng thái và lịch sử đơn hàng của bạn. 
-          Chỉ cần điền vào các trường trên, chúng tôi sẽ thiết lập tài khoản mới cho bạn ngay lập tức. 
-          Chúng tôi chỉ yêu cầu những thông tin cần thiết để quá trình mua hàng nhanh chóng và dễ dàng hơn.
-        </p>
-      </div> */}
-      {  username.length > 0 && password.length > 0 ? (
+      {isLoginForm ? (
+        // Form đăng nhập
         <div>
+          <InputGroup className="mb-3" style={{ width: "353px", height: "56px" }}>
+            <InputGroup.Text id="basic-addon1" style={{ backgroundColor: "#fff" }}>
+              <UserOutlined />
+            </InputGroup.Text>
+            <Form.Control
+              placeholder="Tên đăng nhập"
+              type="text"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+            />
+          </InputGroup>
+
+          <InputGroup className="mb-3" style={{ width: "353px", height: "56px" }}>
+            <InputGroup.Text id="basic-addon2" style={{ backgroundColor: "#fff" }}>
+              <LockOutlined />
+            </InputGroup.Text>
+            <Form.Control
+              placeholder="Mật khẩu"
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+          </InputGroup>
+
           <button
-            // disabled={false}
             onClick={login}
+            disabled={!username || !password}
             style={{
               padding: "10px 25px",
               fontSize: "14px",
               borderRadius: "10px",
-              backgroundColor: "#000",
-              color: "#fff",
-              border: "none",
+              backgroundColor: username && password ? "#000" : "lightgray",
+              color: username && password ? "#fff" : "gray",
+              border: "none"
             }}
           >
-            Đăng nhập
+            {loading ? (
+              <Spinner animation="border" variant="light" size="sm" />
+            ) : (
+              "Đăng nhập"
+            )}
           </button>
         </div>
       ) : (
-        <div>
-          <button
-            // onClick={requestotp}
-            disabled={true}
-            style={{
-              padding: "10px 25px",
-              fontSize: "14px",
-              borderRadius: "10px",
-              backgroundColor: "lightgray",
-              color: "gray",
-            }}
-          >
-           {loading ? (
-                 <Spinner animation="border" variant="light" size="sm" />
+        // Form đăng ký
+        <div style={{ width: "100%", maxWidth: "750px", padding: "0 20px" }}>
+          {/* Username & Password */}
+          <div style={{ display: "flex", gap: "20px", marginBottom: "15px" }}>
+            <InputGroup style={{ flex: 1, height: "56px" }}>
+              <InputGroup.Text style={{ backgroundColor: "#fff" }}>
+                <UserOutlined />
+              </InputGroup.Text>
+              <Form.Control
+                placeholder="Tên đăng nhập"
+                value={registerForm.username}
+                onChange={(e) => setRegisterForm({...registerForm, username: e.target.value})}
+              />
+            </InputGroup>
+
+            <InputGroup style={{ flex: 1, height: "56px" }}>
+              <InputGroup.Text style={{ backgroundColor: "#fff" }}>
+                <LockOutlined />
+              </InputGroup.Text>
+              <Form.Control
+                placeholder="Mật khẩu"
+                type="password"
+                value={registerForm.password}
+                onChange={(e) => setRegisterForm({...registerForm, password: e.target.value})}
+              />
+            </InputGroup>
+          </div>
+
+          {/* Email & Phone */}
+          <div style={{ display: "flex", gap: "20px", marginBottom: "15px" }}>
+            <InputGroup style={{ flex: 1, height: "56px" }}>
+              <Form.Control
+                placeholder="Email"
+                type="email"
+                value={registerForm.email}
+                onChange={(e) => setRegisterForm({...registerForm, email: e.target.value})}
+              />
+            </InputGroup>
+
+            <InputGroup style={{ flex: 1, height: "56px" }}>
+              <Form.Control
+                placeholder="Số điện thoại"
+                value={registerForm.phone}
+                onChange={(e) => setRegisterForm({...registerForm, phone: e.target.value})}
+              />
+            </InputGroup>
+          </div>
+
+          {/* Given Name & Family Name */}
+          <div style={{ display: "flex", gap: "20px", marginBottom: "15px" }}>
+            <InputGroup style={{ flex: 1, height: "56px" }}>
+              <Form.Control
+                placeholder="Tên"
+                value={registerForm.givenName}
+                onChange={(e) => setRegisterForm({...registerForm, givenName: e.target.value})}
+              />
+            </InputGroup>
+
+            <InputGroup style={{ flex: 1, height: "56px" }}>
+              <Form.Control
+                placeholder="Họ"
+                value={registerForm.familyName}
+                onChange={(e) => setRegisterForm({...registerForm, familyName: e.target.value})}
+              />
+            </InputGroup>
+          </div>
+
+          {/* Gender & DOB */}
+          <div style={{ display: "flex", gap: "20px", marginBottom: "15px" }}>
+            <Form.Select 
+              style={{ flex: 1, height: "56px" }}
+              value={registerForm.gender}
+              onChange={(e) => setRegisterForm({...registerForm, gender: e.target.value})}
+            >
+              <option value="MALE">Nam</option>
+              <option value="FEMALE">Nữ</option>
+              <option value="OTHER">Khác</option>
+            </Form.Select>
+
+            <InputGroup style={{ flex: 1, height: "56px" }}>
+              <Form.Control
+                type="date"
+                value={registerForm.dob}
+                onChange={(e) => setRegisterForm({...registerForm, dob: e.target.value})}
+              />
+            </InputGroup>
+          </div>
+
+          {/* Register Button */}
+          <div style={{ textAlign: "center", marginTop: "20px" }}>
+            <button
+              onClick={handleRegister}
+              disabled={!Object.values(registerForm).every(x => x)}
+              style={{
+                padding: "12px 40px",
+                fontSize: "16px",
+                borderRadius: "10px",
+                backgroundColor: Object.values(registerForm).every(x => x) ? "#000" : "lightgray",
+                color: Object.values(registerForm).every(x => x) ? "#fff" : "gray",
+                border: "none",
+                cursor: Object.values(registerForm).every(x => x) ? "pointer" : "not-allowed",
+                transition: "all 0.3s ease"
+              }}
+            >
+              {loading ? (
+                <Spinner animation="border" variant="light" size="sm" />
               ) : (
-                "Đăng nhập"
+                "Đăng ký"
               )}
-          </button>
+            </button>
+          </div>
         </div>
       )}
 
-      <div style={{ color: "lightgray" }}>
-        ___________________________________________________________________________________________________
-      </div>
-      <div
-        style={{
-          width: "705px",
-          height: "70px",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-        }}
-      >
-        <div>
-          <input
-            style={{
-              color: "#fff",
-              backgroundColor: "#000",
-              accentColor: "#000",
-            }}
-            checked={cheked}
-            onChange={() => {
-              cheked == true ? setchecked(false) : setchecked(true);
-            }}
-            type="checkbox"
-          />
-        </div>
-
-        <div>
-          <p
-            style={{
-              fontSize: "13px",
-              paddingTop: "15px",
-              paddingLeft: "10px",
-              color: "#757575",
-            }}
+      {/* Nút chuyển đổi form */}
+      <div style={{marginTop: "10px", textAlign: "center"}}>
+        <p>
+          {isLoginForm ? "Chưa có tài khoản?" : "Đã có tài khoản?"}{" "}
+          <span 
+            style={{color: "#FC2779", cursor: "pointer", fontWeight: "bold"}}
+            onClick={() => setIsLoginForm(!isLoginForm)}
           >
-            Get important updates on Whatsapp Terms and Conditions
-          </p>
-        </div>
+            {isLoginForm ? "Đăng ký ngay" : "Đăng nhập"}
+          </span>
+        </p>
       </div>
 
+      {/* Giữ nguyên phần footer */}
       <div style={{ color: "lightgray" }}>
         ___________________________________________________________________________________________________
       </div>
       <div id="recaptcha-container"></div>
       <div>
-        <p
-          style={{ fontSize: "12px", paddingTop: "15px", paddingLeft: "15px" }}
-        >
+        <p style={{ fontSize: "12px", paddingTop: "15px", paddingLeft: "15px" }}>
           By Signing up or logging in, you agree to our Terms and Conditions
         </p>
       </div>

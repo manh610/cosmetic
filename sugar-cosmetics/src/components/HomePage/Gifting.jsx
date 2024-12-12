@@ -8,9 +8,12 @@ import BestsellersCardCarousel from "./BestsellersCardCarousal";
 export default function Gifting() {
   const [giftingData, setGiftingData] = useState([]);
   useEffect(() => {
-    ProductService.search({}).then((res) => {
+    ProductService.search({
+      pageIndex: 1,
+      pageSize: 4
+    }).then((res) => {
       console.log("res", res);
-      setGiftingData(res.data);
+      setGiftingData([...res.data].sort(() => Math.random() - 0.5));
     }).catch((err) => {
       console.log(err);
     });

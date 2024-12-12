@@ -8,9 +8,12 @@ import BestsellersCardCarousel from "./BestsellersCardCarousal";
 export default function JustIn() {
   const [justInData, setJustInData] = useState([]);
   useEffect(() => {
-    ProductService.search({}).then((res) => {
+    ProductService.search({
+      pageIndex: 1,
+      pageSize: 4
+    }).then((res) => {
       console.log("res", res);
-      setJustInData(res.data);
+      setJustInData([...res.data].sort(() => Math.random() - 0.5));
     }).catch((err) => {
       console.log(err);
     });
