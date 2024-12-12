@@ -22,7 +22,7 @@ import PrivateRoute from "../context/PrivateRoute";
 import SearchResultsPage from "./SearchResultsPage";
 import Admin from "../app/admin/admin.js";
 import CategoryPage from "../components/CategoryPage.jsx";
-import Chat from "../components/Chat.jsx";
+import ChatPage from "../components/ChatPage.jsx";
 
 export default function AllRoutes() {
   return (
@@ -44,7 +44,7 @@ export default function AllRoutes() {
       <Route path="/user/refer" element={<PrivateRoute><FinalRefferPage/></PrivateRoute>}></Route>
       <Route path="/Cart" element={<Cart/>}></Route>
       <Route path="/admin/*" element={<Admin/>}></Route>
-      <Route path="/chat" element={<Chat/>}></Route>
+      <Route path="/chat" element={<ChatPage/>}></Route>
     </Routes>
   );
 }

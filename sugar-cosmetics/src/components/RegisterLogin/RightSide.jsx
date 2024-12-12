@@ -773,7 +773,7 @@ export default function RightSide() {
           alt=""
         />
         <div style={{ margin: "auto" }}>
-          <h6
+          {/* <h6
             style={{
               fontWeight: "bold",
               marginTop: "20px",
@@ -781,7 +781,7 @@ export default function RightSide() {
             }}
           >
             Login/Sign Up Using Phone
-          </h6>
+          </h6> */}
         </div>
       </div>
 
@@ -820,7 +820,7 @@ export default function RightSide() {
         <Form.Text id="passwordHelpBlock" muted></Form.Text>
       </div>
 
-      <div>
+      {/* <div>
         <p
           style={{
             width: "715px",
@@ -833,7 +833,7 @@ export default function RightSide() {
           Chỉ cần điền vào các trường trên, chúng tôi sẽ thiết lập tài khoản mới cho bạn ngay lập tức. 
           Chúng tôi chỉ yêu cầu những thông tin cần thiết để quá trình mua hàng nhanh chóng và dễ dàng hơn.
         </p>
-      </div>
+      </div> */}
       {  username.length > 0 && password.length > 0 ? (
         <div>
           <button

@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from 'react'
 import '@chatscope/chat-ui-kit-styles/dist/default/styles.min.css';
 import { MainContainer, ChatContainer, MessageList, Message, MessageInput, TypingIndicator, AttachmentButton, Avatar } from '@chatscope/chat-ui-kit-react';
 import "./chat.css";
-import { FaCamera, FaComments } from "react-icons/fa6";
+import { FaCamera } from "react-icons/fa6";
 import { Modal } from 'antd';
 
 const API_KEY = "AIzaSyDR-x6019ezk2PfbX3QA5Irqcuf-l61XEs";
@@ -11,7 +11,7 @@ const systemMessage = {
   "role": "user", "content": "Trả lời bằng tiếng việt."
 }
 
-function Chat() {
+function ChatPage() {
   const [messages, setMessages] = useState([
     {
       message: "Xin chào, tôi có thể giúp gì cho bạn.",
@@ -31,8 +31,6 @@ function Chat() {
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
   const [stream, setStream] = useState(null);
-
-  const [isOpen, setIsOpen] = useState(false);
 
   const handleStartCamera = async () => {
     try {
@@ -217,16 +215,10 @@ function Chat() {
   }, [fileInputRef]);
 
   return (
-    <>
-      <button 
-        className="chat-button"
-        onClick={() => setIsOpen(!isOpen)}
-      >
-        <FaComments size={24} />
-      </button>
-
-      <div className={`chat-popup ${isOpen ? 'open' : ''}`}>
-        <MainContainer style={isModalOpen ? {display: 'none'} : { width: '100%', height: '100%' }}>
+    <div className="App">
+        
+      <div style={{ display: 'flex', justifyContent: 'center', height: "700px" }}>
+        <MainContainer style={ isModalOpen ? {display: 'none'} : { width: '900px' }}>
           <ChatContainer>
             <MessageList
               scrollBehavior="smooth"
@@ -259,6 +251,7 @@ function Chat() {
               onAttachClick={handleAttachClick}
             >
               <AttachmentButton onClick={handleAttachClick} disabled={!isInputReady} />
+              
             </MessageInput>
           </ChatContainer>
           <input
@@ -272,16 +265,16 @@ function Chat() {
         </MainContainer>
         
         <div style={isModalOpen ? modalStyle : modalHidden}>
-          <div style={modalContentStyle}>
-            <video ref={videoRef} width="400" height="300" autoPlay></video>
-            <div>
-              <button onClick={handleCapture}>Capture Image</button>
+            <div style={modalContentStyle}>
+                <video ref={videoRef} width="400" height="300" autoPlay></video>
+                <div>
+                    <button onClick={handleCapture}>Capture Image</button>
+                </div>
+                <canvas ref={canvasRef} width="400" height="300" style={{ display: 'none' }}></canvas>
             </div>
-            <canvas ref={canvasRef} width="400" height="300" style={{ display: 'none' }}></canvas>
-          </div>
         </div>
       </div>
-    </>
+    </div>
   );
 }
 
@@ -307,4 +300,4 @@ const modalContentStyle = {
     textAlign: 'center',
 };
 
-export default Chat;
+export default ChatPage;

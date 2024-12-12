@@ -7,6 +7,7 @@ import { useState } from 'react';
 import Navbar from './components/Navbar';
 import AllRoutes from './Pages/AllRoutes';
 import { ToastContainer } from 'react-toastify';
+import Chat from './components/Chat';
 
 
 function App() {
@@ -26,6 +27,7 @@ function App() {
         pauseOnHover
       />
       <AllRoutes />
+      <Chat />
     </div>
   );
 }

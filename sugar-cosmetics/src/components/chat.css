@@ -9,3 +9,44 @@
     margin-top: 8px;
     margin-bottom: 4px;
 }
+
+.chat-button {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+  z-index: 1000;
+}
+
+.chat-popup {
+  position: fixed;
+  bottom: 100px;
+  right: 20px;
+  width: 400px;
+  height: 600px;
+  padding: 20px;
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+  z-index: 999;
+  overflow: hidden;
+  display: none;
+}
+
+.chat-popup.open {
+  display: block;
+}
+
+.cs-main-container {
+    border: none !important;
+}
