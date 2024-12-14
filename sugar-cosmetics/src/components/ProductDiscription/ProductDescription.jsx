@@ -193,10 +193,10 @@ export default function ProductDiscription() {
                   borderRadius: "12px",
                   margin: "3px 12px",
                 }}
-                onMouseOver={() => {
-                  setThumbsrc(`data:image/jpeg;base64,${data.photo}`);
-                  document.getElementById(1).style.border = "2px solid";
-                }}
+                // onMouseOver={() => {
+                //   setThumbsrc(`data:image/jpeg;base64,${data.photo}`);
+                //   document.getElementById(1).style.border = "2px solid";
+                // }}
               >
                 <img
                   src={`data:image/jpeg;base64,${data.photo}`}
@@ -640,7 +640,7 @@ export default function ProductDiscription() {
             }}
           >
             <img
-              src={data.api_featured_image}
+              src={`data:image/jpeg;base64,${data.photo}`}
               alt=""
               style={{ width: "48px", height: "58px" }}
             />

@@ -198,7 +198,7 @@ function Chat() {
           const listProduct = resListProduct.data;
 
           // Tạo prompt cho Gemini
-          const productPrompt = `Hãy phân tích và đề xuất sản phẩm phù hợp nhất từ danh sách sau:
+          const productPrompt = `Hãy phân tích và đề xuất 3 sản phẩm phù hợp nhất từ danh sách sau:
             ${listProduct.map(product => `
               - ID: ${product.id}
               - Tên: ${product.name}
@@ -207,7 +207,7 @@ function Chat() {
               - Giá: ${product.minPrice}
             `).join('\n')}
             
-            Chỉ nói ra sản phẩm phù hợp nhất, hãy khen ngợi sản phẩm đó.`;
+            Chỉ nói ra 3 sản phẩm phù hợp nhất, hãy khen ngợi 3 sản phẩm đó.`;
 
           try {
             const geminiResponse = await processMessageToGeminiWithRetry([
@@ -228,17 +228,19 @@ function Chat() {
             setMessages((prevMessages) => [...prevMessages, recommendationMessage]);
 
             // Tìm sản phẩm được đề xuất trong danh sách
-            const recommendedProduct = listProduct[0]; // Tạm thời lấy sản phẩm đầu tiên
+            const recommendedProducts = listProduct.slice(0, 3); // Lấy 3 sản phẩm đầu tiên
 
-            // Thêm tin nhắn chứa link sản phẩm
-            const productLinkMessage = {
-              message: `Xem chi tiết sản phẩm tại đây: <a href="http://localhost:3000/results/${recommendedProduct.id}" target="_blank">${recommendedProduct.name}</a>`,
-              direction: "incoming",
-              sender: "system",
-              sentTime: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-              isHtml: true // Thêm flag để đánh dấu tin nhắn chứa HTML
-            };
-            setMessages((prevMessages) => [...prevMessages, productLinkMessage]);
+            // Tạo các tin nhắn chứa link cho từng sản phẩm
+            const productLinkMessages = recommendedProducts.map((product) => ({
+                message: `Xem chi tiết sản phẩm tại đây: <a href="http://localhost:3000/results/${product.id}" target="_blank">${product.name}</a>`,
+                direction: "incoming",
+                sender: "system",
+                sentTime: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+                isHtml: true // Thêm flag để đánh dấu tin nhắn chứa HTML
+            }));
+
+            // Thêm các tin nhắn vào danh sách tin nhắn hiện tại
+            setMessages((prevMessages) => [...prevMessages, ...productLinkMessages]);
 
           } catch (error) {
             console.error("Error getting Gemini response:", error);
