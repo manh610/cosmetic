@@ -4,12 +4,85 @@ import { MainContainer, ChatContainer, MessageList, Message, MessageInput, Typin
 import "./chat.css";
 import { FaCamera, FaComments } from "react-icons/fa6";
 import { Modal } from 'antd';
+import axios from 'axios';
+import SkinTypeService from '../app/service/skinType.service';
+import ProductService from '../app/service/product.service';
 
-const API_KEY = "AIzaSyDR-x6019ezk2PfbX3QA5Irqcuf-l61XEs";
+const API_KEY = "";
 
 const systemMessage = {
   "role": "user", "content": "Trả lời bằng tiếng việt."
 }
+
+const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+
+const processMessageToGeminiWithRetry = async (chatMessages, maxRetries = 3) => {
+  for (let attempt = 0; attempt < maxRetries; attempt++) {
+    try {
+      let apiMessages = chatMessages.map((messageObject) => {
+        let role = messageObject.sender === "Gemini" ? "model" : "user";
+        let parts = [{ text: messageObject.message }];
+
+        if (messageObject.image) {
+          parts.push({
+            inlineData: {
+              mimeType: "image/jpeg",
+              data: messageObject.image,
+            },
+          });
+        }
+
+        return { role, parts };
+      });
+
+      const apiRequestBody = {
+        contents: [
+          {
+            role: "user",
+            parts: [{ text: systemMessage.content }],
+          },
+          ...apiMessages,
+        ],
+      };
+
+      const response = await fetch(
+        `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro-latest:generateContent?key=${API_KEY}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(apiRequestBody),
+        }
+      );
+
+      const data = await response.json();
+
+      if (response.status === 429) {
+        console.log(`Rate limit hit, waiting before retry attempt ${attempt + 1}`);
+        await delay(60000); // đợi 60 giây
+        continue;
+      }
+
+      if (!response.ok) {
+        const errorMessage = data.error?.message || "An unknown error occurred.";
+        throw new Error(errorMessage);
+      }
+
+      if (data.candidates && data.candidates.length > 0 && data.candidates[0].content) {
+        return data.candidates[0].content.parts[0].text;
+      }
+
+    } catch (error) {
+      if (attempt === maxRetries - 1) {
+        throw error;
+      }
+      console.log(`Attempt ${attempt + 1} failed, retrying...`);
+      await delay(2000); // đợi 2 giây trước khi thử lại
+    }
+  }
+  throw new Error("Max retries reached");
+};
 
 function Chat() {
   const [messages, setMessages] = useState([
@@ -48,6 +121,7 @@ function Chat() {
   };
 
   const handleCapture = () => {
+
     const video = videoRef.current;
     const canvas = canvasRef.current;
     const context = canvas.getContext('2d');
@@ -59,11 +133,11 @@ function Chat() {
     const base64Image = canvas.toDataURL('image/jpeg').split(",")[1];;
     setImageBase64(base64Image); // Store the base64 image
     const newMessage = {
-        message: '',
-        direction: "outgoing",
-        sender: "user",
-        sentTime: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-        image: base64Image,
+      message: '',
+      direction: "outgoing",
+      sender: "user",
+      sentTime: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      image: base64Image,
     };
 
     const newMessages = [...messages, newMessage];
@@ -74,13 +148,128 @@ function Chat() {
       stream.getTracks().forEach(track => track.stop());
     }
     setIsModalOpen(false); // Close the modal
+    handlePredictImage(base64Image);
+
+  };
+
+  const handlePredictImage = async (image) => {
+    try {
+      setIsTyping(true);
+      const payload = {
+        "image": image,
+      }
+      const res = await axios.post("http://14.224.131.219:8009/predict", payload);
+      console.log(res.data);
+      // const listSkinType = [
+      //   {
+      //     "id": 1,
+      //     "name": "Dry",
+      //   },
+      //   {
+      //     "id": 2,
+      //     "name": "Normal",
+      //   },
+      //   {
+      //     "id": 3,
+      //     "name": "Oily",
+      //   },
+      // ]
+      const resListSkinType = await SkinTypeService.search();
+      const listSkinType = resListSkinType.data;
+      console.log(listSkinType);
+      if (res.status === 200) {
+        const skinType = listSkinType.find(type => type.description === res.data.skin_type);
+        if (skinType) {
+          // Thông báo loại da
+          const skinTypeMessage = {
+            message: `Dựa trên hình ảnh, loại da của bạn là: ${skinType.name}`,
+            direction: "incoming", 
+            sender: "system",
+            sentTime: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+          };
+          setMessages((prevMessages) => [...prevMessages, skinTypeMessage]);
+
+          // Lấy list sản phẩm
+          const resListProduct = await ProductService.search({
+            skinTypeId: skinType.id,
+            pageIndex: 1,
+            pageSize: 3,
+          });
+          const listProduct = resListProduct.data;
+
+          // Tạo prompt cho Gemini
+          const productPrompt = `Hãy phân tích và đề xuất sản phẩm phù hợp nhất từ danh sách sau:
+            ${listProduct.map(product => `
+              - ID: ${product.id}
+              - Tên: ${product.name}
+              - Loại sản phẩm: ${product.categoryName}
+              - Mô tả: ${product.description}
+              - Giá: ${product.minPrice}
+            `).join('\n')}
+            
+            Chỉ nói ra sản phẩm phù hợp nhất, hãy khen ngợi sản phẩm đó.`;
+
+          try {
+            const geminiResponse = await processMessageToGeminiWithRetry([
+              {
+                message: productPrompt,
+                sender: "user",
+                direction: "outgoing"
+              }
+            ]);
+
+            // Hiển thị phản hồi từ Gemini
+            const recommendationMessage = {
+              message: geminiResponse,
+              direction: "incoming",
+              sender: "Gemini",
+              sentTime: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+            };
+            setMessages((prevMessages) => [...prevMessages, recommendationMessage]);
+
+            // Tìm sản phẩm được đề xuất trong danh sách
+            const recommendedProduct = listProduct[0]; // Tạm thời lấy sản phẩm đầu tiên
+
+            // Thêm tin nhắn chứa link sản phẩm
+            const productLinkMessage = {
+              message: `Xem chi tiết sản phẩm tại đây: <a href="http://localhost:3000/results/${recommendedProduct.id}" target="_blank">${recommendedProduct.name}</a>`,
+              direction: "incoming",
+              sender: "system",
+              sentTime: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+              isHtml: true // Thêm flag để đánh dấu tin nhắn chứa HTML
+            };
+            setMessages((prevMessages) => [...prevMessages, productLinkMessage]);
+
+          } catch (error) {
+            console.error("Error getting Gemini response:", error);
+            const errorMessage = {
+              message: "Xin lỗi, hiện tại hệ thống đang bận. Vui lòng thử lại sau.",
+              direction: "incoming",
+              sender: "system",
+              sentTime: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+            };
+            setMessages((prevMessages) => [...prevMessages, errorMessage]);
+          }
+        }
+      }
+      setIsTyping(false);
+    } catch (error) {
+      console.error("Error:", error);
+      setIsTyping(false);
+    }
   };
 
   useEffect(() => {
     console.log("Image state updated:", image);
+    if (image) {
+      handlePredictImage(image.base64);
+      setImage(null);
+    }
   }, [image]);
 
   const handleSend = async (message) => {
+    console.log("Send message:");
+
     const newMessage = {
       message,
       direction: "outgoing",
@@ -88,7 +277,7 @@ function Chat() {
       sentTime: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
       image: image?.base64,
     };
-
+    // handlePredictImage(image?.base64);
     const newMessages = [...messages, newMessage];
     setMessages(newMessages);
     setIsTyping(true);
@@ -188,13 +377,13 @@ function Chat() {
         const base64Data = e.target.result.split(",")[1];
         setImage({ base64: base64Data, file: file }); // Store both base64 and file object
         const newMessage = {
-            message: '',
-            direction: "outgoing",
-            sender: "user",
-            sentTime: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-            image: base64Data,
+          message: '',
+          direction: "outgoing",
+          sender: "user",
+          sentTime: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+          image: base64Data,
         };
-    
+
         const newMessages = [...messages, newMessage];
         setMessages(newMessages);
       };
@@ -218,7 +407,7 @@ function Chat() {
 
   return (
     <>
-      <button 
+      <button
         className="chat-button"
         onClick={() => setIsOpen(!isOpen)}
       >
@@ -226,7 +415,7 @@ function Chat() {
       </button>
 
       <div className={`chat-popup ${isOpen ? 'open' : ''}`}>
-        <MainContainer style={isModalOpen ? {display: 'none'} : { width: '100%', height: '100%' }}>
+        <MainContainer style={isModalOpen ? { display: 'none' } : { width: '100%', height: '100%' }}>
           <ChatContainer>
             <MessageList
               scrollBehavior="smooth"
@@ -246,6 +435,11 @@ function Chat() {
                   >
                     {message.image && (
                       <Message.ImageContent src={`data:image/jpeg;base64,${message.image}`} width={200} />
+                    )}
+                    {message.isHtml ? (
+                      <div dangerouslySetInnerHTML={{ __html: message.message }} />
+                    ) : (
+                      message.message
                     )}
                   </Message>
                 );
@@ -270,7 +464,7 @@ function Chat() {
           />
           <FaCamera onClick={handleStartCamera} />
         </MainContainer>
-        
+
         <div style={isModalOpen ? modalStyle : modalHidden}>
           <div style={modalContentStyle}>
             <video ref={videoRef} width="400" height="300" autoPlay></video>
@@ -286,25 +480,25 @@ function Chat() {
 }
 
 const modalStyle = {
-    position: 'fixed',
-    top: 0,
-    left: 0,
-    width: '100%',
-    height: '100%',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
+  position: 'fixed',
+  top: 0,
+  left: 0,
+  width: '100%',
+  height: '100%',
+  backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  display: 'flex',
+  justifyContent: 'center',
+  alignItems: 'center',
 };
 
 const modalHidden = {
-    display: 'none'
+  display: 'none'
 }
 
 const modalContentStyle = {
-    backgroundColor: 'white',
-    padding: '20px',
-    textAlign: 'center',
+  backgroundColor: 'white',
+  padding: '20px',
+  textAlign: 'center',
 };
 
 export default Chat;
