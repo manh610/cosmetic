@@ -8,7 +8,9 @@ import axios from 'axios';
 import SkinTypeService from '../app/service/skinType.service';
 import ProductService from '../app/service/product.service';
 
-const API_KEY = "AIzaSyAFBHt4iSj-_RCY2JWJB6rIWiFsnevQ6TQ";
+// const API_KEY = "AIzaSyAFBHt4iSj-_RCY2JWJB6rIWiFsnevQ6TQ";
+
+const API_KEY = "";
 
 const systemMessage = {
   "role": "user", "content": "Trả lời bằng tiếng việt."
@@ -16,11 +18,11 @@ const systemMessage = {
 
 const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
-const processMessageToGeminiWithRetry = async (chatMessages, maxRetries = 3) => {
+const processMessageToChatGPTWithRetry = async (chatMessages, maxRetries = 3) => {
   for (let attempt = 0; attempt < maxRetries; attempt++) {
     try {
       let apiMessages = chatMessages.map((messageObject) => {
-        let role = messageObject.sender === "Gemini" ? "model" : "user";
+        let role = messageObject.sender === "ChatGPT" ? "assistant" : "user";
         let parts = [{ text: messageObject.message }];
 
         if (messageObject.image) {
@@ -32,24 +34,23 @@ const processMessageToGeminiWithRetry = async (chatMessages, maxRetries = 3) => 
           });
         }
 
-        return { role, parts };
+        return { role: role, content: messageObject.message };
       });
 
       const apiRequestBody = {
-        contents: [
-          {
-            role: "user",
-            parts: [{ text: systemMessage.content }],
-          },
+        "model": "gpt-3.5-turbo",
+        messages: [
+          systemMessage,
           ...apiMessages,
         ],
       };
 
       const response = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro-latest:generateContent?key=${API_KEY}`,
+        `https://api.openai.com/v1/chat/completions`,
         {
           method: "POST",
           headers: {
+            "Authorization": "Bearer " + API_KEY,
             "Content-Type": "application/json",
           },
           body: JSON.stringify(apiRequestBody),
@@ -69,8 +70,8 @@ const processMessageToGeminiWithRetry = async (chatMessages, maxRetries = 3) => 
         throw new Error(errorMessage);
       }
 
-      if (data.candidates && data.candidates.length > 0 && data.candidates[0].content) {
-        return data.candidates[0].content.parts[0].text;
+      if (data.choices && data.choices.length > 0 && data.choices[0].message) {
+        return data.choices[0].message.content;
       }
 
     } catch (error) {
@@ -89,7 +90,7 @@ function Chat() {
     {
       message: "Xin chào, tôi có thể giúp gì cho bạn.",
       sentTime: "just now",
-      sender: "Gemini",
+      sender: "ChatGPT",
       direction: "incoming",
     }
   ]);
@@ -197,7 +198,7 @@ function Chat() {
           });
           const listProduct = resListProduct.data;
 
-          // Tạo prompt cho Gemini
+          // Tạo prompt cho ChatGPT
           const productPrompt = `Hãy phân tích và đề xuất 3 sản phẩm phù hợp nhất từ danh sách sau:
             ${listProduct.map(product => `
               - ID: ${product.id}
@@ -210,7 +211,7 @@ function Chat() {
             Chỉ nói ra 3 sản phẩm phù hợp nhất`;
 
           try {
-            const geminiResponse = await processMessageToGeminiWithRetry([
+            const ChatGPTResponse = await processMessageToChatGPTWithRetry([
               {
                 message: productPrompt,
                 sender: "user",
@@ -218,11 +219,11 @@ function Chat() {
               }
             ]);
 
-            // Hiển thị phản hồi từ Gemini
+            // Hiển thị phản hồi từ ChatGPT
             const recommendationMessage = {
-              message: geminiResponse,
+              message: ChatGPTResponse,
               direction: "incoming",
-              sender: "Gemini",
+              sender: "ChatGPT",
               sentTime: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
             };
             setMessages((prevMessages) => [...prevMessages, recommendationMessage]);
@@ -243,7 +244,7 @@ function Chat() {
             setMessages((prevMessages) => [...prevMessages, ...productLinkMessages]);
 
           } catch (error) {
-            console.error("Error getting Gemini response:", error);
+            console.error("Error getting ChatGPT response:", error);
             const errorMessage = {
               message: "Xin lỗi, hiện tại hệ thống đang bận. Vui lòng thử lại sau.",
               direction: "incoming",
@@ -270,7 +271,7 @@ function Chat() {
   }, [image]);
 
   const handleSend = async (message) => {
-    console.log("Send message:");
+    console.log("Send message:", message);
 
     const newMessage = {
       message,
@@ -286,14 +287,14 @@ function Chat() {
     setImage(null); // Clear the image after sending
 
     try {
-      await processMessageToGemini(newMessages);
+      await processMessageToChatGPT(newMessages);
     } catch (error) {
       console.error("Error sending message:", error);
       setMessages([
         ...newMessages,
         {
           message: "Sorry, I encountered an error. Please try again.",
-          sender: "Gemini",
+          sender: "ChatGPT",
           direction: "incoming",
           sentTime: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
         },
@@ -302,38 +303,37 @@ function Chat() {
     }
   };
 
-  async function processMessageToGemini(chatMessages) {
+  async function processMessageToChatGPT(chatMessages) {
     let apiMessages = chatMessages.map((messageObject) => {
-      let role = messageObject.sender === "Gemini" ? "model" : "user";
-      let parts = [{ text: messageObject.message }];
+      let role = messageObject.sender === "ChatGPT" ? "assistant" : "user";
+      // let parts = [{ text: messageObject.message }];
 
-      if (messageObject.image) {
-        parts.push({
-          inlineData: {
-            mimeType: "image/jpeg",
-            data: messageObject.image,
-          },
-        });
-      }
+      // if (messageObject.image) {
+      //   parts.push({
+      //     inlineData: {
+      //       mimeType: "image/jpeg",
+      //       data: messageObject.image,
+      //     },
+      //   });
+      // }
 
-      return { role, parts };
+      return { role: role, content: messageObject.message };
     });
 
     const apiRequestBody = {
-      contents: [
-        {
-          role: "user",
-          parts: [{ text: systemMessage.content }],
-        },
+      "model": "gpt-3.5-turbo",
+      messages: [
+        systemMessage,
         ...apiMessages,
       ],
     };
 
     const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro-latest:generateContent?key=${API_KEY}`,
+      `https://api.openai.com/v1/chat/completions`,
       {
         method: "POST",
         headers: {
+          "Authorization": "Bearer " + API_KEY,
           "Content-Type": "application/json",
         },
         body: JSON.stringify(apiRequestBody),
@@ -341,6 +341,7 @@ function Chat() {
     );
 
     const data = await response.json();
+    console.log(data);
 
     if (!response.ok) {
       const errorMessage = data.error?.message || "An unknown error occurred.";
@@ -348,15 +349,15 @@ function Chat() {
     }
 
     if (
-      data.candidates &&
-      data.candidates.length > 0 &&
-      data.candidates[0].content
+      data.choices &&
+      data.choices.length > 0 &&
+      data.choices[0].message
     ) {
       setMessages([
         ...chatMessages,
         {
-          message: data.candidates[0].content.parts[0].text,
-          sender: "Gemini",
+          message: data.choices[0].message.content,
+          sender: "ChatGPT",
           direction: "incoming",
           sentTime: new Date().toLocaleTimeString([], {
             hour: '2-digit',
@@ -365,7 +366,7 @@ function Chat() {
         },
       ]);
     } else {
-      throw new Error("No valid response received from Gemini.");
+      throw new Error("No valid response received from ChatGPT.");
     }
 
     setIsTyping(false);
