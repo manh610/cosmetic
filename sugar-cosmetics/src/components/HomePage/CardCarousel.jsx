@@ -24,7 +24,7 @@ function CardCarousel(props) {
             marginBottom: "40px",
           }}
         >
-          ₹{price}
+          {price} VNĐ
         </p>
         <div
           style={{

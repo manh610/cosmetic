@@ -7,7 +7,7 @@ function FourCardsCarousel({ BestSellersData }) {
       <Carousel variant="dark" slide={false} className="bestseller_carousal">
         <Carousel.Item>
           <div className="CardCrousel">
-            {BestSellersData.map((el, index) => (
+            {BestSellersData.slice(0, 5).map((el, index) => (
               <CardCarousel
                 src1={`data:image/jpeg;base64,${el.photo}`}
                 text={el.name}

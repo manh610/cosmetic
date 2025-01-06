@@ -269,10 +269,7 @@ export default function ProductDiscription() {
               }}>
                 <span style={{color: '#ee4d2d', fontWeight: 'bold' }}>FLASH SALE</span>
                 <div className="countdown">
-                  <span style={{color: '#fff'}}>KẾT THÚC TRONG</span>
-                  <div className="timer" style={{ color: '#fff', display: 'inline-block', marginLeft: '10px' }}>
-                    1 giờ
-                  </div>
+                  
                 </div>
               </div>
 
@@ -328,6 +325,17 @@ export default function ProductDiscription() {
               </div>
             </div>
 
+            <div style={{ width: "683px", height: "245px" }}>
+              <Accordion flush style={{ width: "683px", height: "245px" }} defaultActiveKey="0">
+                <Accordion.Item eventKey="0">
+                  <Accordion.Header>MÔ TẢ</Accordion.Header>
+                  <Accordion.Body>
+                    <div dangerouslySetInnerHTML={{ __html: data.description }} />
+                  </Accordion.Body>
+                </Accordion.Item>
+              </Accordion>
+            </div>
+
             <div className="shipping-info" style={{
               padding: '20px 0',
               borderTop: '1px solid #f5f5f5'
@@ -338,7 +346,7 @@ export default function ProductDiscription() {
                 gap: '10px',
                 marginTop: '10px'
               }}>
-                <img src="/shipping-icon.png" alt="shipping" />
+                <img src="/shipping-icon.jpg" alt="shipping" width="50px" />
                 <div>
                   <div>Nhận từ 14 Th12 - 16 Th12, phí giao ₫0</div>
                   <div className="note" style={{
@@ -560,42 +568,7 @@ export default function ProductDiscription() {
 
             {/* --------------------------------------accordian------------------------------------------- */}
 
-            <div style={{ width: "683px", height: "245px" }}>
-              <Accordion flush style={{ width: "683px", height: "245px" }}>
-                <Accordion.Item eventKey="0">
-                  <Accordion.Header>DESCRIPTION</Accordion.Header>
-                  <Accordion.Body>
-                    <div dangerouslySetInnerHTML={{ __html: data.description }} />
-                  </Accordion.Body>
-                </Accordion.Item>
-                <Accordion.Item eventKey="1">
-                    <Accordion.Header>DETAILS</Accordion.Header>
-                    <Accordion.Body>
-                    <div dangerouslySetInnerHTML={{ __html: data.description }} />
-                  </Accordion.Body>
-                </Accordion.Item>
-                <Accordion.Item eventKey="2">
-                  <Accordion.Header>INGREDIENTS</Accordion.Header>
-                  <Accordion.Body>
-                    {data.tag_list == null ? (
-                      <p>No info</p>
-                    ) : (
-                      data.tag_list.map((el) => {
-                        return <p>{el}</p>;
-                      })
-                    )}
-                  </Accordion.Body>
-                </Accordion.Item>
-                <Accordion.Item eventKey="3">
-                  <Accordion.Header>COMMONLY ASKED QUESTIONS</Accordion.Header>
-                  <Accordion.Body>N.A.</Accordion.Body>
-                </Accordion.Item>
-                <Accordion.Item eventKey="4">
-                  <Accordion.Header>REVIEWS</Accordion.Header>
-                  <Accordion.Body>0 Reviews</Accordion.Body>
-                </Accordion.Item>
-              </Accordion>
-            </div>
+            
           </div>
         </div>
       </div>
@@ -606,185 +579,7 @@ export default function ProductDiscription() {
 
       {/* ----------------------------------------------fixed under bar----------------------------------------------------------- */}
 
-      <div
-        style={{
-          width: "100%",
-          margin: "auto",
-          height: "90px",
-          paddingBottom: "10px",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "left",
-        }}
-        className="fixed_cart"
-      >
-        <div
-          style={{
-            width: "511px",
-            height: "90px",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-evenly",
-            marginLeft: "110px",
-          }}
-        >
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              border: "1px solid #e4e4e4",
-              borderRadius: "12px",
-              width: "71px",
-              height: "77px",
-            }}
-          >
-            <img
-              src={`data:image/jpeg;base64,${data.photo}`}
-              alt=""
-              style={{ width: "48px", height: "58px" }}
-            />
-          </div>
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "start",
-              flexDirection: "column",
-            }}
-          >
-            <div
-              style={{
-                width: "411px",
-                height: "23px",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "left",
-                marginLeft: "10px",
-              }}
-            >
-              <span style={{ color: "#212121", fontSize: "14px" }}>
-                {data.name}
-              </span>
-            </div>
-
-            <div
-              style={{
-                width: "411px",
-                height: "36px",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "left",
-                marginLeft: "10px",
-              }}
-            >
-              <span
-                style={{
-                  fontSize: "24px",
-                  color: "#212121",
-                  fontWeight: "bold",
-                }}
-              >
-                ₹{data.price}
-                <span
-                  style={{
-                    color: "#FC2779",
-                    fontSize: "14px",
-                    marginLeft: "10px",
-                  }}
-                >
-                  ( 20% Off)
-                </span>
-              </span>
-            </div>
-          </div>
-        </div>
-
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "left",
-            alignItems: "center",
-            width: "708px",
-            height: "90px",
-          }}
-        >
-          <div
-            style={{
-              width: "42px",
-              height: "42px",
-              border: "2px solid #000",
-              borderRadius: "5px",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-            onClick={() => {
-              if (Loginstate.isAuth == true && checkwishAvailable(data) == true) {
-                AddtoWishlist(data);
-                swal({
-                  title: "Added To Wishlist",
-                  text: "Product added successfully to your wish list",
-                  buttons: false,
-                  icon: "success",
-                });
-              }
-              else {
-                swal({
-                  title: "Login Now to Add to Wishlist",
-                  text: "or maybe Item is already exists in wishlist!",
-                  buttons: false,
-                  icon: "info",
-                });
-              }
-            }}
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              style={{ marginLeft: "0px" }}
-              fill="#000"
-              width="30"
-              height="30"
-              viewBox="0 0 512 512"
-            >
-              <path d="M244 84L255.1 96L267.1 84.02C300.6 51.37 347 36.51 392.6 44.1C461.5 55.58 512 115.2 512 185.1V190.9C512 232.4 494.8 272.1 464.4 300.4L283.7 469.1C276.2 476.1 266.3 480 256 480C245.7 480 235.8 476.1 228.3 469.1L47.59 300.4C17.23 272.1 0 232.4 0 190.9V185.1C0 115.2 50.52 55.58 119.4 44.1C164.1 36.51 211.4 51.37 244 84C243.1 84 244 84.01 244 84L244 84zM255.1 163.9L210.1 117.1C188.4 96.28 157.6 86.4 127.3 91.44C81.55 99.07 48 138.7 48 185.1V190.9C48 219.1 59.71 246.1 80.34 265.3L256 429.3L431.7 265.3C452.3 246.1 464 219.1 464 190.9V185.1C464 138.7 430.4 99.07 384.7 91.44C354.4 86.4 323.6 96.28 301.9 117.1L255.1 163.9z" />
-            </svg>
-          </div>
-
-          <Button
-            style={{
-              width: "222px",
-              height: "44px",
-              marginLeft: "20px",
-              borderRadius: "5px",
-              backgroundColor: "#000000",
-              color: "#fff",
-              boxShadow: "inset 0 0 30px #616060",
-              fontWeight: "bold",
-            }}
-            onClick={() => {
-              if (checkcartAvailable(data) == true) {
-                Addtocart(data);
-                swal({
-                  buttons: false,
-                  title: "Item Added To Cart",
-                  text: "Item Added to cart successfully!",
-                  icon: "success"
-                })
-              } else {
-                swal({
-                  buttons: false,
-                  title: "Item already exists!",
-                  text: "Item already exists in cart!",
-                  icon: "error"
-                })
-              }
-            }}
-          >
-            ADD TO CART
-          </Button>
-        </div>
-      </div>
+      
 
       {/* ------------------------------shop form recent------------------------------------------------------------------
        */}

@@ -9,7 +9,7 @@ function BestsellersCardCarousel({ BestSellersData }) {
       <Carousel slide={false} className="bestseller_carousal">
         <Carousel.Item>
           <div  className="CardCrousel">
-            {BestSellersData.map((item) => (
+            {BestSellersData.slice(0,4).map((item) => (
               <CardCarousel
                 key={item.id}
                 src1={`data:image/jpeg;base64,${item.photo}`}

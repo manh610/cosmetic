@@ -18,6 +18,12 @@
   z-index: 20;
   margin-bottom: 0px;
 }
+
+.menucontainer{
+  width: 95% !important;
+  padding: 0px 175px;
+}
+
 @keyframes fadein {
   0% {
     opacity: 0%;

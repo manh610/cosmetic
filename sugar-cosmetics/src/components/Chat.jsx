@@ -8,7 +8,7 @@ import axios from 'axios';
 import SkinTypeService from '../app/service/skinType.service';
 import ProductService from '../app/service/product.service';
 
-const API_KEY = "";
+const API_KEY = "AIzaSyAFBHt4iSj-_RCY2JWJB6rIWiFsnevQ6TQ";
 
 const systemMessage = {
   "role": "user", "content": "Trả lời bằng tiếng việt."
@@ -207,7 +207,7 @@ function Chat() {
               - Giá: ${product.minPrice}
             `).join('\n')}
             
-            Chỉ nói ra 3 sản phẩm phù hợp nhất, hãy khen ngợi 3 sản phẩm đó.`;
+            Chỉ nói ra 3 sản phẩm phù hợp nhất`;
 
           try {
             const geminiResponse = await processMessageToGeminiWithRetry([
